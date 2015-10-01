@@ -29,17 +29,53 @@ namespace specgen
                     new XAttribute("Target", r.Target)));
         }
 
-        private static XElement PackageRelationships()
+        private static XElement Part(string name, string contentType, string padding, XElement data)
         {
             return new XElement(Pkg + "part",
-                new XAttribute(Pkg + "name", "/_rels/.rels"),
-                new XAttribute(Pkg + "contentType", "application/vnd.openxmlformats-package.relationships+xml"),
-                new XAttribute(Pkg + "padding", "512"),
+                new XAttribute(Pkg + "name", name),
+                new XAttribute(Pkg + "contentType", contentType),
+                (padding != null) ? new XAttribute(Pkg + "padding", padding) : null,
                 new XElement(Pkg + "xmlData",
-                    CreateRelationships(new List<Relationship>
-                    {
-                        new Relationship { Id = "rId1", Type = "officeDocument", Target = "word/document.xml" }
-                    })));
+                    data));
+        }
+
+        private static XElement PackageRelationships()
+        {
+            return Part(
+                "/_rels/.rels",
+                "application/vnd.openxmlformats-package.relationships+xml",
+                "512",
+                CreateRelationships(new List<Relationship>
+                {
+                    new Relationship {Id = "rId1", Type = "officeDocument", Target = "word/document.xml"}
+                }));
+        }
+
+        private static XElement DocumentRelationships()
+        {
+            return Part(
+                "/word/_rels/document.xml.rels",
+                "application/vnd.openxmlformats-package.relationships+xml",
+                "256",
+                CreateRelationships(new List<Relationship>
+                {
+                    new Relationship {Id = "rId1", Type = "fontTable", Target = "fontTable.xml"},
+                    new Relationship {Id = "rId2", Type = "footer", Target = "footer1.xml"},
+                    new Relationship {Id = "rId3", Type = "footer", Target = "footer2.xml"},
+                    new Relationship {Id = "rId4", Type = "footer", Target = "footer3.xml"},
+                    new Relationship {Id = "rId5", Type = "footer", Target = "footer4.xml"},
+                    new Relationship {Id = "rId6", Type = "footer", Target = "footer5.xml"},
+                    new Relationship {Id = "rId7", Type = "header", Target = "header1.xml"},
+                    new Relationship {Id = "rId8", Type = "header", Target = "header2.xml"},
+                    new Relationship {Id = "rId9", Type = "header", Target = "header3.xml"},
+                    new Relationship {Id = "rId10", Type = "header", Target = "header4.xml"},
+                    new Relationship {Id = "rId11", Type = "header", Target = "header5.xml"},
+                    new Relationship {Id = "rId12", Type = "header", Target = "header6.xml"},
+                    new Relationship {Id = "rId13", Type = "numbering", Target = "numbering.xml"},
+                    new Relationship {Id = "rId14", Type = "settings", Target = "settings.xml"},
+                    new Relationship {Id = "rId15", Type = "styles", Target = "styles.xml"},
+                    new Relationship {Id = "rId16", Type = "webSettings", Target = "webSettings.xml"}
+                }));
         }
 
         static int Main(string[] args)
@@ -57,7 +93,8 @@ namespace specgen
                     new XAttribute(XNamespace.Xmlns + "pkg", Pkg.NamespaceName),
                     new XAttribute(XNamespace.Xmlns + "ors", Ors.NamespaceName),
                     new XAttribute(XNamespace.Xmlns + "prs", Prs.NamespaceName),
-                    PackageRelationships()));
+                    PackageRelationships(),
+                    DocumentRelationships()));
 
             doc.Save(args[1]);
 
