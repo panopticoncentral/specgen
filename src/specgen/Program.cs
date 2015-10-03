@@ -6,17 +6,38 @@ using System.Xml.Linq;
 
 namespace specgen
 {
-    class Program
+    internal class Program
     {
         private static readonly XNamespace Pkg = "http://schemas.microsoft.com/office/2006/xmlPackage";
         private static readonly XNamespace Ors = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
         private static readonly XNamespace Prs = "http://schemas.openxmlformats.org/package/2006/relationships";
+        private static readonly XNamespace W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 
         private struct Relationship
         {
             public string Id;
             public string Type;
             public string Target;
+        }
+
+        private struct FontSignature
+        {
+            public string Usb0;
+            public string Usb1;
+            public string Usb2;
+            public string Usb3;
+            public string Csb0;
+            public string Csb1;
+        }
+
+        private struct Font
+        {
+            public string Name;
+            public string Panose1;
+            public string Charset;
+            public string Family;
+            public string Pitch;
+            public FontSignature Sig;
         }
 
         private static XElement CreateRelationships(IEnumerable<Relationship> relationships)
@@ -78,6 +99,125 @@ namespace specgen
                 }));
         }
 
+        private static XElement KeyValue(string key, string value)
+        {
+            return new XElement(W + key,
+                new XAttribute(W + "val", value));
+        }
+
+        private static XElement Fonts(IEnumerable<Font> fonts)
+        {
+            return new XElement(W + "fonts",
+                from f in fonts
+                select new XElement(W + "font",
+                    new XAttribute(W + "name", f.Name),
+                    KeyValue("panose1", f.Panose1),
+                    KeyValue("charset", f.Charset),
+                    KeyValue("family", f.Family),
+                    KeyValue("pitch", f.Pitch),
+                    new XElement(W + "sig",
+                        new XAttribute(W + "usb0", f.Sig.Usb0),
+                        new XAttribute(W + "usb1", f.Sig.Usb1),
+                        new XAttribute(W + "usb2", f.Sig.Usb2),
+                        new XAttribute(W + "usb3", f.Sig.Usb3),
+                        new XAttribute(W + "csb0", f.Sig.Csb0),
+                        new XAttribute(W + "csb1", f.Sig.Csb1)
+                        )
+                    ));
+        }
+
+        private static XElement FontTable()
+        {
+            return Part(
+                "/word/fontTable.xml",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml",
+                null,
+                Fonts(new List<Font>
+                {
+                    new Font
+                    {
+                        Name ="Arial",
+                        Panose1="020B0604020202020204",
+                        Charset="00",
+                        Family="swiss",
+                        Pitch="variable",
+                        Sig = new FontSignature { Usb0="E0002AFF", Usb1="C0007843", Usb2="00000009", Usb3="00000000", Csb0="000001FF", Csb1="00000000"}
+                    },
+                    new Font
+                    {
+                        Name ="Calibri",
+                        Panose1="020F0502020204030204",
+                        Charset="00",
+                        Family="swiss",
+                        Pitch="variable",
+                        Sig = new FontSignature { Usb0="E10002FF", Usb1="4000ACFF", Usb2="00000009", Usb3="00000000", Csb0="0000019F", Csb1="00000000"}
+                    },
+                    new Font
+                    {
+                        Name ="Cambria",
+                        Panose1="02040503050406030204",
+                        Charset="00",
+                        Family="roman",
+                        Pitch="variable",
+                        Sig = new FontSignature { Usb0="A00002EF", Usb1="4000004B", Usb2="00000000", Usb3="00000000", Csb0="0000019F", Csb1="00000000"}
+                    },
+                    new Font
+                    {
+                        Name ="Cambria Math",
+                        Panose1="02040503050406030204",
+                        Charset="00",
+                        Family="roman",
+                        Pitch="variable",
+                        Sig = new FontSignature { Usb0="A00002EF", Usb1="420020EB", Usb2="00000000", Usb3="00000000", Csb0="0000019F", Csb1="00000000"}
+                    },
+                    new Font
+                    {
+                        Name ="Consolas",
+                        Panose1="020B0609020204030204",
+                        Charset="00",
+                        Family="modern",
+                        Pitch="fixed",
+                        Sig = new FontSignature { Usb0="E10002FF", Usb1="4000FCFF", Usb2="00000009", Usb3="00000000", Csb0="0000019F", Csb1="00000000"}
+                    },
+                    new Font
+                    {
+                        Name ="Courier New",
+                        Panose1="02070309020205020404",
+                        Charset="00",
+                        Family="modern",
+                        Pitch="fixed",
+                        Sig = new FontSignature { Usb0="E0002AFF", Usb1="C0007843", Usb2="00000009", Usb3="00000000", Csb0="000001FF", Csb1="00000000"}
+                    },
+                    new Font
+                    {
+                        Name ="Symbol",
+                        Panose1="05050102010706020507",
+                        Charset="02",
+                        Family="roman",
+                        Pitch="variable",
+                        Sig = new FontSignature { Usb0="00000000", Usb1="10000000", Usb2="00000000", Usb3="00000000", Csb0="80000000", Csb1="00000000"}
+                    },
+                    new Font
+                    {
+                        Name ="Tahoma",
+                        Panose1="020B0604030504040204",
+                        Charset="00",
+                        Family="swiss",
+                        Pitch="variable",
+                        Sig = new FontSignature { Usb0="E1002EFF", Usb1="C000605B", Usb2="00000029", Usb3="00000000", Csb0="000101FF", Csb1="00000000"}
+                    },
+                    new Font
+                    {
+                        Name ="Times New Roman",
+                        Panose1="02020603050405020304",
+                        Charset="00",
+                        Family="roman",
+                        Pitch="variable",
+                        Sig = new FontSignature { Usb0="E0002AFF", Usb1="C0007841", Usb2="00000009", Usb3="00000000", Csb0="000001FF", Csb1="00000000"}
+                    }
+                }));
+        }
+
         static int Main(string[] args)
         {
             if (args.Length != 2)
@@ -93,8 +233,10 @@ namespace specgen
                     new XAttribute(XNamespace.Xmlns + "pkg", Pkg.NamespaceName),
                     new XAttribute(XNamespace.Xmlns + "ors", Ors.NamespaceName),
                     new XAttribute(XNamespace.Xmlns + "prs", Prs.NamespaceName),
+                    new XAttribute(XNamespace.Xmlns + "w", W.NamespaceName),
                     PackageRelationships(),
-                    DocumentRelationships()));
+                    DocumentRelationships(),
+                    FontTable()));
 
             doc.Save(args[1]);
 
