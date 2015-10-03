@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -103,6 +104,12 @@ namespace specgen
         {
             return new XElement(W + key,
                 new XAttribute(W + "val", value));
+        }
+
+        private static XElement KeyValue(string key, string valueName, string value)
+        {
+            return new XElement(W + key,
+                new XAttribute(W + valueName, value));
         }
 
         private static XElement Fonts(IEnumerable<Font> fonts)
@@ -218,6 +225,188 @@ namespace specgen
                 }));
         }
 
+        static XElement Document()
+        {
+            return Part("/word/document.xml",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml",
+                null,
+                new XElement(W + "document",
+                    new XElement(W + "body",
+                        // TODO
+                        null)));
+        }
+
+        static XElement Para(params object[] elements)
+        {
+            return new XElement(W + "p",
+                elements);
+        }
+
+        static XElement Run(params object[] elements)
+        {
+            return new XElement(W + "r",
+                elements);
+        }
+
+        static XElement Text(string text, bool preserve = false)
+        {
+            return new XElement(W + "t",
+                preserve ? new XAttribute(XNamespace.Xml + "space", "preserve") : null,
+                text);
+        }
+
+        static XElement Break()
+        {
+            return new XElement(W + "br");
+        }
+
+        static XElement Tab()
+        {
+            return new XElement(W + "tab");
+        }
+
+        static XElement ParaProperties(params object[] elements)
+        {
+            return new XElement(W + "pPr",
+                elements);
+        }
+
+        static XElement RunProperties(params object[] elements)
+        {
+            return new XElement(W + "rPr",
+                elements);
+        }
+
+        static IEnumerable<XElement> Field(string value, params object[] properties)
+        {
+            return new List<XElement>
+            {
+                Run(
+                    properties != null ? RunProperties(properties) : null,
+                    new XElement(W + "fldChar",
+                        new XAttribute(W + "fldCharType", "begin"))),
+                Run(
+                    properties != null ? RunProperties(properties) : null,
+                    new XElement(W + "instrText",
+                        new XAttribute(XNamespace.Xml + "space", "preserve"),
+                        value)),
+                Run(
+                    properties != null ? RunProperties(properties) : null,
+                    new XElement(W + "fldChar",
+                        new XAttribute(W + "fldCharType", "separate"))),
+                Run(
+                    properties != null ? RunProperties(properties) : null,
+                    new XElement(W + "fldChar",
+                        new XAttribute(W + "fldCharType", "end")))
+            };
+        }
+
+        static XElement Footer(string name, params object[] elements)
+        {
+            return Part($"/word/{name}.xml",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
+                null,
+                new XElement(W + "ftr",
+                    Para(
+                        elements)));
+        }
+
+        static XElement Tabs(params Tuple<string, string>[] tabs)
+        {
+            return new XElement(W + "tabs",
+                from t in tabs
+                select new XElement(W + "tab",
+                    new XAttribute(W + "val", t.Item1),
+                    new XAttribute(W + "pos", t.Item2)));
+        }
+
+        static IEnumerable<XElement> Footers()
+        {
+            return new List<XElement>
+            {
+                Footer("footer1",
+                    ParaProperties(
+                        KeyValue("pStyle", "Footer"),
+                        KeyValue("ind", "right", "360"))),
+                Footer("footer2",
+                    ParaProperties(
+                        KeyValue("pStyle", "Footer"),
+                        KeyValue("jc", "center")),
+                    Run(
+                        Text("Copyright © ", true)),
+                    Field(" DATE  \\@ \"yyyy\"  \\* MERGEFORMAT "),
+                    Run(
+                        Text(". All Rights Reserved."),
+                        Break())),
+                Footer("footer3",
+                    ParaProperties(
+                        KeyValue("pStyle", "Footer"),
+                        Tabs(
+                            new Tuple<string, string>("clear", "4320"),
+                            new Tuple<string, string>("clear", "8640"),
+                            new Tuple<string, string>("right", "9936"))),
+                    Field(" PAGE  \\* MERGEFORMAT "),
+                    Run(
+                        RunProperties(
+                            KeyValue("sz", "16")),
+                        Tab(),
+                        Text("Confidential Material – Copyright © Microsoft Corporation ", true)),
+                    Field(" DATE  \\@ \"yyyy\"  \\* MERGEFORMAT ",
+                        KeyValue("sz", "16")),
+                    Run(
+                        RunProperties(
+                            KeyValue("sz", "16")),
+                        Text(". All Rights Reserved."))),
+                Footer("footer4",
+                    ParaProperties(
+                        KeyValue("pStyle", "Footer"),
+                        Tabs(
+                            new Tuple<string, string>("clear", "4320"),
+                            new Tuple<string, string>("clear", "8640"),
+                            new Tuple<string, string>("right", "9936"))),
+                    Run(
+                        RunProperties(
+                            KeyValue("sz", "16")),
+                        Text("Confidential Material – Copyright © Microsoft Corporation ", true)),
+                    Field(" DATE  \\@ \"yyyy\"  \\* MERGEFORMAT ",
+                        KeyValue("sz", "16")),
+                    Run(
+                        RunProperties(
+                            KeyValue("sz", "16")),
+                        Text(". All Rights Reserved.")),
+                    Run(
+                        Tab()),
+                    Field(" PAGE  \\* MERGEFORMAT ")
+                    ),
+                Footer("footer5",
+                    ParaProperties(
+                        KeyValue("pStyle", "Footer"),
+                        Tabs(
+                            new Tuple<string, string>("clear", "4320"),
+                            new Tuple<string, string>("clear", "8640"),
+                            new Tuple<string, string>("right", "9936"))),
+                    Run(
+                        RunProperties(
+                            KeyValue("sz", "16")),
+                        Text("Confidential Material – Copyright © Microsoft Corporation ", true)),
+                    Field(" DATE  \\@ \"yyyy\"  \\* MERGEFORMAT ",
+                        KeyValue("sz", "16")),
+                    Run(
+                        RunProperties(
+                            KeyValue("sz", "16")),
+                        Text(". All Rights Reserved.")),
+                    Run(
+                        Tab()),
+                    Field(" PAGE  \\* MERGEFORMAT ")
+                    )
+            };
+        }
+
+        static IEnumerable<XElement> Headers()
+        {
+            return null;
+        }
+
         static int Main(string[] args)
         {
             if (args.Length != 2)
@@ -236,7 +425,10 @@ namespace specgen
                     new XAttribute(XNamespace.Xmlns + "w", W.NamespaceName),
                     PackageRelationships(),
                     DocumentRelationships(),
-                    FontTable()));
+                    FontTable(),
+                    Document(),
+                    Footers(),
+                    Headers()));
 
             doc.Save(args[1]);
 
