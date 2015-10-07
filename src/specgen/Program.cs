@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -301,6 +299,23 @@ namespace specgen
             };
         }
 
+        static XElement Tabs(params Tuple<string, string>[] tabs)
+        {
+            return new XElement(W + "tabs",
+                from t in tabs
+                select new XElement(W + "tab",
+                    new XAttribute(W + "val", t.Item1),
+                    new XAttribute(W + "pos", t.Item2)));
+        }
+
+        static XElement StandardTabs()
+        {
+            return Tabs(
+                new Tuple<string, string>("clear", "4320"),
+                new Tuple<string, string>("clear", "8640"),
+                new Tuple<string, string>("right", "9936"));
+        }
+
         static XElement Footer(string name, params object[] elements)
         {
             return Part($"/word/{name}.xml",
@@ -309,15 +324,6 @@ namespace specgen
                 new XElement(W + "ftr",
                     Para(
                         elements)));
-        }
-
-        static XElement Tabs(params Tuple<string, string>[] tabs)
-        {
-            return new XElement(W + "tabs",
-                from t in tabs
-                select new XElement(W + "tab",
-                    new XAttribute(W + "val", t.Item1),
-                    new XAttribute(W + "pos", t.Item2)));
         }
 
         static IEnumerable<XElement> Footers()
@@ -341,10 +347,7 @@ namespace specgen
                 Footer("footer3",
                     ParaProperties(
                         KeyValue("pStyle", "Footer"),
-                        Tabs(
-                            new Tuple<string, string>("clear", "4320"),
-                            new Tuple<string, string>("clear", "8640"),
-                            new Tuple<string, string>("right", "9936"))),
+                        StandardTabs()),
                     Field(" PAGE  \\* MERGEFORMAT "),
                     Run(
                         RunProperties(
@@ -360,10 +363,7 @@ namespace specgen
                 Footer("footer4",
                     ParaProperties(
                         KeyValue("pStyle", "Footer"),
-                        Tabs(
-                            new Tuple<string, string>("clear", "4320"),
-                            new Tuple<string, string>("clear", "8640"),
-                            new Tuple<string, string>("right", "9936"))),
+                        StandardTabs()),
                     Run(
                         RunProperties(
                             KeyValue("sz", "16")),
@@ -381,10 +381,7 @@ namespace specgen
                 Footer("footer5",
                     ParaProperties(
                         KeyValue("pStyle", "Footer"),
-                        Tabs(
-                            new Tuple<string, string>("clear", "4320"),
-                            new Tuple<string, string>("clear", "8640"),
-                            new Tuple<string, string>("right", "9936"))),
+                        StandardTabs()),
                     Run(
                         RunProperties(
                             KeyValue("sz", "16")),
@@ -402,9 +399,84 @@ namespace specgen
             };
         }
 
-        static IEnumerable<XElement> Headers()
+        static XElement Header(string name, params object[] elements)
         {
-            return null;
+            return Part($"/word/{name}.xml",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
+                null,
+                new XElement(W + "hdr",
+                    Para(
+                        elements)));
+        }
+
+        private static XElement HeaderBorder()
+        {
+            return new XElement(W + "bdr",
+                new XElement(W + "bottom",
+                    new XAttribute(W + "val", "single"),
+                    new XAttribute(W + "sz", "4"),
+                    new XAttribute(W + "space", "1"),
+                    new XAttribute(W + "color", "auto")));
+        }
+
+        private static IEnumerable<XElement> Headers()
+        {
+            return new List<XElement>
+            {
+                Header("header1",
+                    ParaProperties(
+                        KeyValue("pStyle", "Header"),
+                        HeaderBorder()),
+                    Run(
+                        RunProperties(
+                            new XElement(W + "b"),
+                            new XElement(W + "bCs")),
+                        Text("Table of Contents"))),
+                Header("header2",
+                    ParaProperties(
+                        KeyValue("pStyle", "Header"),
+                        HeaderBorder(),
+                        KeyValue("jc", "right")),
+                    Run(
+                        RunProperties(
+                            new XElement(W + "b"),
+                            new XElement(W + "bCs")),
+                        Text("Table of Contents"))),
+                Header("header3",
+                    ParaProperties(
+                        KeyValue("pStyle", "Header"))),
+                Header("header4",
+                    ParaProperties(
+                        KeyValue("pStyle", "Header"),
+                        HeaderBorder()),
+                    Field(" STYLEREF  \"Heading 1\" \\n  \\* MERGEFORMAT "),
+                    Run(
+                        RunProperties(
+                            new XElement(W + "b"),
+                            new XElement(W + "bCs")),
+                        Text(".     ", true)),
+                    Field(" STYLEREF  \"Heading 1\"  \\* MERGEFORMAT ")),
+                Header("header5",
+                    ParaProperties(
+                        KeyValue("pStyle", "Header"),
+                        HeaderBorder(),
+                        StandardTabs(),
+                        RunProperties(
+                            new XElement(W + "b"),
+                            new XElement(W + "bCs"))),
+                    Run(
+                        RunProperties(
+                            new XElement(W + "b"),
+                            new XElement(W + "bCs")),
+                        Tab()),
+                    Field(" STYLEREF  \"Heading 2\" \\n  \\* MERGEFORMAT "),
+                    Run(
+                        Text("     ", true)),
+                    Field(" STYLEREF  \"Heading 2\"  \\* MERGEFORMAT ")),
+                Header("header6",
+                    ParaProperties(
+                        KeyValue("pStyle", "Header"))),
+            };
         }
 
         static int Main(string[] args)
