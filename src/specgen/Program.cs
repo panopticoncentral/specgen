@@ -546,6 +546,13 @@ namespace specgen
                 lvls);
         }
 
+        static XElement Number(string id, string abstractId)
+        {
+            return new XElement(W + "num",
+                new XAttribute(W + "numId", id),
+                KeyValue("abstractNumId", abstractId));
+        }
+
         static XElement Numbering()
         {
             return Part("/word/numbering.xml",
@@ -569,7 +576,12 @@ namespace specgen
                     AbstractNum("3", "0B086C79",
                         NumberedList("NumberedList1", "360")),
                     AbstractNum("4", "49917801",
-                        NumberedList("NumberedList2", "720"))));
+                        NumberedList("NumberedList2", "720")),
+                    Number("1", "0"),
+                    Number("2", "1"),
+                    Number("3", "2"),
+                    Number("4", "3"),
+                    Number("5", "4")));
         }
 
         static int Main(string[] args)
