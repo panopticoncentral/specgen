@@ -479,6 +479,99 @@ namespace specgen
             };
         }
 
+        static XElement BulletedList(string style, string tab)
+        {
+            return new XElement(W + "lvl",
+                new XAttribute(W + "ilvl", "0"),
+                KeyValue("start", "1"),
+                KeyValue("numFmt", "bullet"),
+                KeyValue("pStyle", style),
+                KeyValue("lvlText", ""),
+                KeyValue("lvlJc", "left"),
+                ParaProperties(
+                    Tabs(
+                        new Tuple<string, string>("num", tab)),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", tab),
+                        new XAttribute(W + "hanging", "360"))),
+                RunProperties(
+                    new XElement(W + "rFonts",
+                        new XAttribute(W + "ascii", "Symbol"),
+                        new XAttribute(W + "hAnsi", "Symbol"),
+                        new XAttribute(W + "hint", "default"))));
+        }
+
+        static XElement Heading(string ilvl, string style, string text, string indent)
+        {
+            return new XElement(W + "lvl",
+                new XAttribute(W + "ilvl", ilvl),
+                KeyValue("start", "1"),
+                KeyValue("numFmt", "decimal"),
+                KeyValue("pStyle", style),
+                KeyValue("suff", "space"),
+                KeyValue("lvlText", text),
+                KeyValue("lvlJc", "left"),
+                RunProperties(
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", indent),
+                        new XAttribute(W + "hanging", indent))));
+        }
+
+        static XElement NumberedList(string style, string tab)
+        {
+            return new XElement(W + "lvl",
+                new XAttribute(W + "ilvl", "0"),
+                KeyValue("start", "1"),
+                KeyValue("numFmt", "decimal"),
+                KeyValue("pStyle", style),
+                KeyValue("lvlText", "%1."),
+                KeyValue("lvlJc", "left"),
+                ParaProperties(
+                    Tabs(
+                        new Tuple<string, string>("num", tab)),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", tab),
+                        new XAttribute(W + "hanging", "360"))),
+                RunProperties(
+                    new XElement(W + "rFonts",
+                        new XAttribute(W + "hint", "default"))));
+        }
+
+        static XElement AbstractNum(string id, string nsid, params object[] lvls)
+        {
+            return new XElement(W + "abstractNum",
+                new XAttribute(W + "abstractNumId", id),
+                KeyValue("nsid", nsid),
+                KeyValue("multiLevelType", lvls.Length > 1 ? "multilevel" : "singleLevel"),
+                lvls);
+        }
+
+        static XElement Numbering()
+        {
+            return Part("/word/numbering.xml",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml",
+                null,
+                new XElement(W + "numbering",
+                    AbstractNum("0", "453D70D5",
+                        BulletedList("BulletedList1", "360")),
+                    AbstractNum("1", "70C804DC",
+                        BulletedList("BulletedList2", "720")),
+                    AbstractNum("2", "7AF84DA2",
+                        Heading("0", "Heading1", "%1.", "432"),
+                        Heading("1", "Heading2", "%1.%2", "576"),
+                        Heading("2", "Heading3", "%1.%2.%3", "720"),
+                        Heading("3", "Heading4", "%1.%2.%3.%4", "864"),
+                        Heading("4", "Heading5", "%1.%2.%3.%4.%5", "1008"),
+                        Heading("5", "Heading6", "%1.%2.%3.%4.%5.%6", "1152"),
+                        Heading("6", "Heading7", "%1.%2.%3.%4.%5.%6.%7", "1296"),
+                        Heading("7", "Heading8", "%1.%2.%3.%4.%5.%6.%7.%8", "1440"),
+                        Heading("8", "Heading9", "%1.%2.%3.%4.%5.%6.%7.%8.%9", "1584")),
+                    AbstractNum("3", "0B086C79",
+                        NumberedList("NumberedList1", "360")),
+                    AbstractNum("4", "49917801",
+                        NumberedList("NumberedList2", "720"))));
+        }
+
         static int Main(string[] args)
         {
             if (args.Length != 2)
@@ -500,7 +593,8 @@ namespace specgen
                     FontTable(),
                     Document(),
                     Footers(),
-                    Headers()));
+                    Headers(),
+                    Numbering()));
 
             doc.Save(args[1]);
 
