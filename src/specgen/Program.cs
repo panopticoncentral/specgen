@@ -1215,6 +1215,17 @@ namespace specgen
                 ))));
         }
 
+        static XElement WebSettings()
+        {
+            return Part("/word/webSettings.xml",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml",
+                null,
+                new XElement(W + "webSettings",
+                    new XElement(W + "optimizeForBrowser"),
+                    new XElement(W + "relyOnVML"),
+                    new XElement(W + "allowPNG")));
+        }
+
         static int Main(string[] args)
         {
             if (args.Length != 2)
@@ -1238,7 +1249,8 @@ namespace specgen
                     Footers(),
                     Headers(),
                     Numbering(),
-                    Styles()));
+                    Styles(),
+                    WebSettings()));
 
             doc.Save(args[1]);
 
