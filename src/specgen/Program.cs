@@ -308,6 +308,16 @@ namespace specgen
                     new XAttribute(W + "pos", t.Item2)));
         }
 
+        static XElement Tabs(params Tuple<string, string, string>[] tabs)
+        {
+            return new XElement(W + "tabs",
+                from t in tabs
+                select new XElement(W + "tab",
+                    new XAttribute(W + "val", t.Item1),
+                    new XAttribute(W + "pos", t.Item2),
+                    new XAttribute(W + "leader", t.Item3)));
+        }
+
         static XElement StandardTabs()
         {
             return Tabs(
@@ -584,6 +594,627 @@ namespace specgen
                     Number("5", "4")));
         }
 
+        static XElement NumProperties(string id, string ilvl = null)
+        {
+            return new XElement(W + "numPr",
+                ilvl != null ? KeyValue("ilvl", ilvl) : null,
+                KeyValue("numId", id));
+        }
+
+        static XElement Style(bool paragraph, bool custom, bool def, string id, string name, bool quick, string basedOn, string next, bool hidden, bool redefine, string link, params object[] props)
+        {
+            return new XElement(W + "style",
+                new XAttribute(W + "type", paragraph ? "paragraph" : "character"),
+                custom ? new XAttribute(W + "customStyle", "1") : null,
+                def ? new XAttribute(W + "default", "1") : null,
+                new XAttribute(W + "styleId", id),
+                KeyValue("name", name),
+                quick ? new XElement(W + "qFormat") : null,
+                basedOn != null ? KeyValue("basedOn", basedOn) : null,
+                next != null ? KeyValue("next", next) : null,
+                hidden ? new XElement(W + "semiHidden") : null,
+                hidden ? new XElement(W + "unhideWhenUsed") : null, 
+                redefine ? new XElement(W + "autoRedefine") : null,
+                link != null ? KeyValue("link", link) : null,
+                props);
+        }
+
+        static XElement Border(string type, string stroke, string size, string space, string color, string shadow = null)
+        {
+            return new XElement(W + type,
+                new XAttribute(W + "val", stroke),
+                new XAttribute(W + "sz", size),
+                new XAttribute(W + "space", space),
+                new XAttribute(W + "color", color),
+                shadow != null ? new XAttribute(W + "shadow", shadow) : null);
+        }
+
+        static XElement Styles()
+        {
+            return Part("/word/styles.xml",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml",
+                null,
+                new XElement(W + "styles",
+                    new XElement(W + "docDefaults",
+                        new XElement(W + "rPrDefault",
+                            RunProperties(
+                                new XElement(W + "rFonts",
+                                    new XAttribute(W + "ascii", "Times New Roman"),
+                                    new XAttribute(W + "eastAsia", "Times New Roman"),
+                                    new XAttribute(W + "hAnsi", "Times New Roman"),
+                                    new XAttribute(W + "cs", "Times New Roman")),
+                                new XElement(W + "lang",
+                                    new XAttribute(W + "val", "en-US"),
+                                    new XAttribute(W + "eastAsia", "en-US"),
+                                    new XAttribute(W + "bidi", "ar-SA")))),
+                        new XElement(W + "pPrDefault")),
+            Style(true, true, false, "Annotation", "Annotation", true, "Text", null, false, false, null,
+                ParaProperties(
+                    new XElement(W + "pBdr",
+                        Border("top", "single", "4", "1", "auto", "1"),
+                        Border("left", "single", "4", "4", "auto", "1"),
+                        Border("bottom", "single", "4", "1", "auto", "1"),
+                        Border("right", "single", "4", "4", "auto", "1")),
+                    new XElement(W + "shd",
+                        new XAttribute(W + "val", "pct50"),
+                        new XAttribute(W + "color", "C0C0C0"),
+                        new XAttribute(W + "fill", "auto"))
+                )
+            ),
+            Style(true, true, false, "AlertText", "Alert Text", true, "Text", null, false, false, null,
+                ParaProperties(
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "360"))
+                )
+            ),
+            Style(true, true, false, "AlertTextinList1", "Alert Text in List 1", true, "TextinList1", null, false, false, null,
+                ParaProperties(
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "720"))
+                )
+            ),
+            Style(true, true, false, "AlertTextinList2", "Alert Text in List 2", true, "TextinList2", null, false, false, null,
+                ParaProperties(
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "1080"))
+                )
+            ),
+            Style(true, true, false, "Author", "Author", true, "Subtitle", null, false, false, null),
+            Style(false, true, false, "Bold", "Bold", true, "DefaultParagraphFont", null, false, false, null,
+                RunProperties(
+                    new XElement(W + "b")
+                )
+            ),
+            Style(false, true, false, "BoldItalic", "Bold Italic", true, "DefaultParagraphFont", null, false, false, null,
+                RunProperties(
+                    new XElement(W + "b"),
+                    new XElement(W + "i")
+                )
+            ),
+            Style(true, true, false, "BulletedList1", "Bulleted List 1", true, "Text", null, false, false, null,
+                ParaProperties(
+                    NumProperties("1")
+                )
+            ),
+            Style(true, true, false, "BulletedList2", "Bulleted List 2", true, "Text", null, false, false, null,
+                ParaProperties(
+                    NumProperties("2")
+                )
+            ),
+            Style(true, true, false, "Code", "Code", true, null, null, false, false, null,
+                ParaProperties(
+                    new XElement(W + "spacing",
+                        new XAttribute(W + "after", "120")),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "720"))
+                ),
+                RunProperties(
+                    new XElement(W + "rFonts",
+                            new XAttribute(W + "ascii", "Consolas"), 
+                            new XAttribute(W + "hAnsi", "Consolas")),
+                    new XElement(W + "noProof"),
+                    KeyValue("color", "000080")
+                )
+            ),
+            Style(false, true, false, "CodeEmbedded", "Code Embedded", true, "DefaultParagraphFont", null, false, false, null,
+                RunProperties(
+                    new XElement(W + "rFonts",
+                            new XAttribute(W + "ascii", "Consolas"), 
+                            new XAttribute(W + "hAnsi", "Consolas")),
+                    new XElement(W + "noProof"),
+                    KeyValue("color", "000080"),
+                    KeyValue("position", "0"),
+                    KeyValue("sz", "20"),
+                    KeyValue("szCs", "20")
+                )
+            ),
+            Style(true, true, false, "CodeinList1", "Code in List 1", true, "Code", null, false, false, null,
+                ParaProperties(
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "1080"))
+                )
+            ),
+            Style(true, true, false, "CodeinList2", "Code in List 2", true, "Code", null, false, false, null,
+                ParaProperties(
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "1440"))
+                )
+            ),
+            Style(false, false, true, "DefaultParagraphFont", "Default Paragraph Font", false, null, null, true, false, null),
+            Style(true, false, false, "Footer", "Footer", true, "Text", null, false, false, null,
+                ParaProperties(
+                    Tabs(
+                        new Tuple<string, string>("center", "4320"),
+                        new Tuple<string, string>("right", "8640"))
+                )
+            ),
+            Style(false, true, false, "Definition", "Definition", true, "DefaultParagraphFont", null, false, false, null,
+                RunProperties(
+                    new XElement(W + "i")
+                )
+            ),
+            Style(true, true, false, "DeprecatedText", "Deprecated Text", true, "Text", null, false, false, null),
+            Style(true, true, false, "DeprecatedTextinList1", "Deprecated Text in List 1", true, "TextinList1", null, false, false, null),
+            Style(true, true, false, "DeprecatedTextinList2", "Deprecated Text in List 2", true, "TextinList2", null, false, false, null),
+            Style(true, true, false, "Grammar", "Grammar", true, "Text", null, false, false, null,
+                ParaProperties(
+                    new XElement(W + "keepLines"),
+                    new XElement(W + "spacing",
+                        new XAttribute(W + "line", "250"),
+                        new XAttribute(W + "lineRule", "exact")),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "1080"),
+                        new XAttribute(W + "hanging", "360"))
+                ),
+                RunProperties(
+                    new XElement(W + "noProof")
+                )
+            ),
+            Style(false, true, false, "GrammarNon-Terminal", "Grammar Non-Terminal", true, "DefaultParagraphFont", null, false, false, null,
+                RunProperties(
+                    new XElement(W + "i"),
+                    new XElement(W + "iCs"),
+                    new XElement(W + "noProof")
+                )
+            ),
+            Style(false, true, false, "GrammarReference", "Grammar Reference", true, "DefaultParagraphFont", null, false, false, null,
+                RunProperties(
+                    new XElement(W + "i")
+                )
+            ),
+            Style(false, true, false, "GrammarTerminal", "Grammar Terminal", true, "DefaultParagraphFont", null, false, false, null,
+                RunProperties(
+                    new XElement(W + "rFonts",
+                            new XAttribute(W + "ascii", "Consolas"),
+                            new XAttribute(W + "hAnsi", "Consolas"),
+                            new XAttribute(W + "cs", "Courier New")),
+                    new XElement(W + "noProof"),
+                    KeyValue("color", "000080"),
+                    KeyValue("sz", "20")
+                )
+            ),
+            Style(true, false, false, "Header", "Header", true, "Text", null, false, false, null,
+                ParaProperties(
+                    Tabs(
+                        new Tuple<string, string>("center", "4320"),
+                        new Tuple<string, string>("right", "8640"))
+                )
+            ),
+            Style(true, true, false, "HeadingBase", "Heading Base", false, "Text", "Text", true, false, null,
+                ParaProperties(
+                    new XElement(W + "keepNext"),
+                    new XElement(W + "spacing",
+                        new XAttribute(W + "before", "160"),
+                        new XAttribute(W + "after", "80"))
+                ),
+                RunProperties(
+                    new XElement(W + "rFonts",
+                            new XAttribute(W + "ascii", "Cambria"), 
+                            new XAttribute(W + "hAnsi", "Cambria")),
+                    KeyValue("kern", "28"),
+                    KeyValue("szCs", "20")
+                )
+            ),
+            Style(true, false, false, "Heading1", "Heading 1",true, "HeadingBase", "Text", false, false, null,
+                ParaProperties(
+                    NumProperties("3"),
+                    new XElement(W + "pBdr",
+                        Border("bottom", "double", "4", "8", "auto")),
+                    Tabs(
+                        new Tuple<string, string>("num", "360")),
+                    new XElement(W + "spacing",
+                        new XAttribute(W + "after", "480")),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "0"),
+                        new XAttribute(W + "firstLine", "0")),
+                    KeyValue("jc", "right"),
+                    KeyValue("outlineLvl", "0")
+                ),
+                RunProperties(
+                    new XElement(W + "b"),
+                    KeyValue("sz", "48")
+                )
+            ),
+            Style(true, false, false, "Heading2", "Heading 2",true, "HeadingBase", "Text", false, false, null,
+                ParaProperties(
+                    NumProperties("3", "1"),
+                    Tabs(
+                        new Tuple<string, string>("num", "360")),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "0"),
+                        new XAttribute(W + "firstLine", "0")),
+                    KeyValue("outlineLvl", "1")
+                ),
+                RunProperties(
+                    new XElement(W + "b"),
+                    KeyValue("sz", "24")
+                )
+            ),
+            Style(true, false, false, "Heading3", "Heading 3",true, "HeadingBase", "Text", false, false, null,
+                ParaProperties(
+                    NumProperties("3", "2"),
+                    Tabs(
+                        new Tuple<string, string>("num", "360")),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "0"),
+                        new XAttribute(W + "firstLine", "0")),
+                    KeyValue("outlineLvl", "2")
+                ),
+                RunProperties(
+                    new XElement(W + "b")
+                )
+            ),
+            Style(true, false, false, "Heading4", "Heading 4",true, "HeadingBase", "Text", false, false, null,
+                ParaProperties(
+                    NumProperties("3", "3"),
+                    Tabs(
+                        new Tuple<string, string>("num", "360")),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "0"),
+                        new XAttribute(W + "firstLine", "0")),
+                    KeyValue("outlineLvl", "3")
+                )
+            ),
+            Style(true, false, false, "Heading5", "Heading 5",true, "HeadingBase", "Text", false, false, null,
+                ParaProperties(
+                    NumProperties("3", "4"),
+                    Tabs(
+                        new Tuple<string, string>("num", "360")),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "0"),
+                        new XAttribute(W + "firstLine", "0")),
+                    KeyValue("outlineLvl", "4")
+                )
+            ),
+            Style(true, false, false, "Heading6", "Heading 6",true, "HeadingBase", "Text", false, false, null,
+                ParaProperties(
+                    NumProperties("3", "5"),
+                    Tabs(
+                        new Tuple<string, string>("num", "360")),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "0"),
+                        new XAttribute(W + "firstLine", "0")),
+                    KeyValue("outlineLvl", "5")
+                )
+            ),
+            Style(true, false, false, "Heading7", "Heading 7",true, "HeadingBase", "Text", false, false, null,
+                ParaProperties(
+                    NumProperties("3", "6"),
+                    Tabs(
+                        new Tuple<string, string>("num", "360")),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "0"),
+                        new XAttribute(W + "firstLine", "0")),
+                    KeyValue("outlineLvl", "6")
+                )
+            ),
+            Style(true, false, false, "Heading8", "Heading 8",true, "HeadingBase", "Text", false, false, null,
+                ParaProperties(
+                    NumProperties("3", "7"),
+                    Tabs(
+                        new Tuple<string, string>("num", "360")),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "0"),
+                        new XAttribute(W + "firstLine", "0")),
+                    KeyValue("outlineLvl", "7")
+                )
+            ),
+            Style(true, false, false, "Heading9", "Heading 9",true, "HeadingBase", "Text", false, false, null,
+                ParaProperties(
+                    NumProperties("3", "8"),
+                    Tabs(
+                        new Tuple<string, string>("num", "360")),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "0"),
+                        new XAttribute(W + "firstLine", "0")),
+                    KeyValue("outlineLvl", "8")
+                )
+            ),
+            Style(true, true, false, "Issue", "Issue", true, "Text", null, false, false, null,
+                ParaProperties(
+                    new XElement(W + "keepLines"),
+                    new XElement(W + "pBdr",
+                        Border("top", "single", "4", "1", "D99694"),
+                        Border("left", "single", "4", "4", "D99694"),
+                        Border("bottom", "single", "4", "1", "D99694"),
+                        Border("right", "single", "4", "4", "D99694")),
+                    new XElement(W + "shd",
+                        new XAttribute(W + "val", "clear"),
+                        new XAttribute(W + "color", "auto"),
+                        new XAttribute(W + "fill", "F2DCDB"))
+                ),
+                RunProperties(
+                    new XElement(W + "i"),
+                    new XElement(W + "noProof"),
+                    KeyValue("szCs", "20")
+                )
+            ),
+            Style(false, true, false, "Italic", "Italic", true, "DefaultParagraphFont", null, false, false, null,
+                RunProperties(
+                    new XElement(W + "i")
+                )
+            ),
+            Style(true, true, false, "Label", "Label",true, "Text", "Text", false, false, null,
+                RunProperties(
+                    new XElement(W + "b")
+                )
+            ),
+            Style(false, true, false, "LabelEmbedded", "Label Embedded", true, "DefaultParagraphFont", null, false, false, null,
+                RunProperties(
+                    new XElement(W + "b"),
+                    KeyValue("szCs", "20")
+                )
+            ),
+            Style(true, true, false, "LabelinList1", "Label in List 1",true, "TextinList1", "TextinList1", false, false, null,
+                RunProperties(
+                    new XElement(W + "b")
+                )
+            ),
+            Style(true, true, false, "LabelinList2", "Label in List 2",true, "TextinList2", "TextinList2", false, false, null,
+                RunProperties(
+                    new XElement(W + "b")
+                )
+            ),
+            Style(true, false, true, "Normal", "Normal", false, null, null, true, false, null,
+                ParaProperties(
+                    new XElement(W + "spacing",
+                        new XAttribute(W + "after", "200"),
+                        new XAttribute(W + "line", "276"),
+                        new XAttribute(W + "lineRule", "auto"))
+                ),
+                RunProperties(
+                    new XElement(W + "rFonts",
+                            new XAttribute(W + "ascii", "Calibri"), 
+                            new XAttribute(W + "hAnsi", "Calibri")),
+                    KeyValue("sz", "22"),
+                    KeyValue("szCs", "22")
+                )
+            ),
+            Style(true, true, false, "NumberedList1", "Numbered List 1", true, "Text", null, false, false, null,
+                ParaProperties(
+                    NumProperties("4")
+                )
+            ),
+            Style(true, true, false, "NumberedList2", "Numbered List 2", true, "Text", null, false, false, null,
+                ParaProperties(
+                    NumProperties("5")
+                )
+            ),
+            Style(false, true, false, "Strikethrough", "Strikethrough", true, "DefaultParagraphFont", null, false, false, null,
+                RunProperties(
+                    new XElement(W + "strike"),
+                    KeyValue("dstrike", "0")
+                )
+            ),
+            Style(false, true, false, "Subscript", "Subscript", true, "DefaultParagraphFont", null, false, false, null,
+                RunProperties(
+                    KeyValue("vertAlign", "subscript")
+                )
+            ),
+            Style(true, false, false, "Subtitle", "Subtitle", true, "Text", null, false, false, null,
+                ParaProperties(
+                    new XElement(W + "spacing",
+                        new XAttribute(W + "after", "60"))
+                ),
+                RunProperties(
+                    new XElement(W + "rFonts",
+                            new XAttribute(W + "cs", "Arial")),
+                    new XElement(W + "i"),
+                    KeyValue("sz", "36"),
+                    KeyValue("szCs", "28")
+                )
+            ),
+            Style(false, true, false, "Superscript", "Superscript", true, "DefaultParagraphFont", null, false, false, null,
+                RunProperties(
+                    KeyValue("vertAlign", "superscript")
+                )
+            ),
+            Style(true, true, false, "TableSpacing", "Table Spacing", false, "Text", "Text", true, false, null,
+                ParaProperties(
+                    new XElement(W + "spacing",
+                        new XAttribute(W + "after", "0"),
+                        new XAttribute(W + "line", "120"),
+                        new XAttribute(W + "lineRule", "exact"))
+                ),
+                RunProperties(
+                    KeyValue("color", "FF00FF"),
+                    KeyValue("sz", "12")
+                )
+            ),
+            Style(true, true, false, "Text", "Text", true, null, null, false, false, "TextChar",
+                ParaProperties(
+                    new XElement(W + "spacing",
+                        new XAttribute(W + "after", "120"))
+                ),
+                RunProperties(
+                    new XElement(W + "rFonts",
+                            new XAttribute(W + "ascii", "Calibri"), 
+                            new XAttribute(W + "hAnsi", "Calibri")),
+                    KeyValue("color", "000000"),
+                    KeyValue("sz", "22"),
+                    KeyValue("szCs", "22")
+                )
+            ),
+            Style(false, true, false, "TextChar", "Text Char",true, "DefaultParagraphFont", null, false, false, "Text",
+                RunProperties(
+                    new XElement(W + "rFonts",
+                            new XAttribute(W + "ascii", "Calibri"), 
+                            new XAttribute(W + "hAnsi", "Calibri")),
+                    KeyValue("color", "000000"),
+                    KeyValue("sz", "22"),
+                    KeyValue("szCs", "22")
+                )
+            ),
+            Style(true, true, false, "TextinList1", "Text in List 1", true, "Text", null, false, false, null,
+                ParaProperties(
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "360"))
+                )
+            ),
+            Style(true, true, false, "TextinList2", "Text in List 2", true, "Text", null, false, false, null,
+                ParaProperties(
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "720"))
+                )
+            ),
+            Style(true, false, false, "Title", "Title", true, "Text", null, false, false, null,
+                ParaProperties(
+                    new XElement(W + "spacing",
+                        new XAttribute(W + "before", "240"),
+                        new XAttribute(W + "after", "60"))
+                ),
+                RunProperties(
+                    new XElement(W + "rFonts",
+                            new XAttribute(W + "ascii", "Cambria"),
+                            new XAttribute(W + "hAnsi", "Cambria"),
+                            new XAttribute(W + "cs", "Arial")),
+                    new XElement(W + "b"),
+                    new XElement(W + "bCs"),
+                    KeyValue("kern", "28"),
+                    KeyValue("sz", "56"),
+                    KeyValue("szCs", "32")
+                )
+            ),
+            Style(true, true, false, "TOCHeading", "TOC Heading", false, "Text", null, false, false, null,
+                ParaProperties(
+                    new XElement(W + "pBdr",
+                        Border("bottom", "double", "4", "8", "auto")),
+                    new XElement(W + "spacing",
+                        new XAttribute(W + "before", "160"),
+                        new XAttribute(W + "after", "480")),
+                    KeyValue("jc", "right")
+                ),
+                RunProperties(
+                    new XElement(W + "rFonts",
+                            new XAttribute(W + "ascii", "Cambria"), 
+                            new XAttribute(W + "hAnsi", "Cambria")),
+                    new XElement(W + "b"),
+                    new XElement(W + "bCs"),
+                    KeyValue("sz", "48"),
+                    KeyValue("szCs", "20")
+                )
+            ),
+            Style(true, false, false, "TOC1", "TOC 1",true, "Text", "Text", false, true, null,
+                ParaProperties(
+                    new XElement(W + "spacing",
+                        new XAttribute(W + "before", "120"))
+                ),
+                RunProperties(
+                    new XElement(W + "b"),
+                    new XElement(W + "bCs")
+                )
+            ),
+            Style(true, false, false, "TOC2", "TOC 2",true, "Text", "Text", false, true, null,
+                ParaProperties(
+                    Tabs(
+                        new Tuple<string, string, string>("right", "9926", "dot")),
+                    new XElement(W + "spacing",
+                        new XAttribute(W + "after", "0")),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "240"))
+                ),
+                RunProperties(
+                    new XElement(W + "noProof")
+                )
+            ),
+            Style(true, false, false, "TOC3", "TOC 3",true, "Text", "Text", false, true, null,
+                ParaProperties(
+                    new XElement(W + "spacing",
+                        new XAttribute(W + "after", "0")),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "480"))
+                ),
+                RunProperties(
+                    new XElement(W + "iCs")
+                )
+            ),
+            Style(true, false, false, "TOC4", "TOC 4",true, "Text", "Text", false, true, null,
+                ParaProperties(
+                    new XElement(W + "spacing",
+                        new XAttribute(W + "after", "0")),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "720"))
+                ),
+                RunProperties(
+                    KeyValue("szCs", "21")
+                )
+            ),
+            Style(true, false, false, "TOC5", "TOC 5",true, "Text", "Text", false, true, null,
+                ParaProperties(
+                    new XElement(W + "spacing",
+                        new XAttribute(W + "after", "0")),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "960"))
+                ),
+                RunProperties(
+                    KeyValue("szCs", "21")
+                )
+            ),
+            Style(true, false, false, "TOC6", "TOC 6",true, "Text", "Text", false, true, null,
+                ParaProperties(
+                    new XElement(W + "spacing",
+                        new XAttribute(W + "after", "0")),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "1200"))
+                ),
+                RunProperties(
+                    KeyValue("szCs", "21")
+                )
+            ),
+            Style(true, false, false, "TOC7", "TOC 7",true, "Text", "Text", false, true, null,
+                ParaProperties(
+                    new XElement(W + "spacing",
+                        new XAttribute(W + "after", "0")),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "1440"))
+                ),
+                RunProperties(
+                    KeyValue("szCs", "21")
+                )
+            ),
+            Style(true, false, false, "TOC8", "TOC 8",true, "Text", "Text", false, true, null,
+                ParaProperties(
+                    new XElement(W + "spacing",
+                        new XAttribute(W + "after", "0")),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "1680"))
+                ),
+                RunProperties(
+                    KeyValue("szCs", "21")
+                )
+            ),
+            Style(true, false, false, "TOC9", "TOC 9",true, "Text", "Text", false, true, null,
+                ParaProperties(
+                    new XElement(W + "spacing",
+                        new XAttribute(W + "after", "0")),
+                    new XElement(W + "ind",
+                        new XAttribute(W + "left", "1920"))
+                ),
+                RunProperties(
+                    KeyValue("szCs", "21")
+                ))));
+        }
+
         static int Main(string[] args)
         {
             if (args.Length != 2)
@@ -606,7 +1237,8 @@ namespace specgen
                     Document(),
                     Footers(),
                     Headers(),
-                    Numbering()));
+                    Numbering(),
+                    Styles()));
 
             doc.Save(args[1]);
 
