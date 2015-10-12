@@ -11,6 +11,9 @@ namespace specgen
         private static readonly XNamespace Ors = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
         private static readonly XNamespace Prs = "http://schemas.openxmlformats.org/package/2006/relationships";
         private static readonly XNamespace W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+        private static readonly XNamespace M = "http://schemas.openxmlformats.org/officeDocument/2006/math";
+        private static readonly XNamespace O = "urn:schemas-microsoft-com:office:office";
+        private static readonly XNamespace V = "urn:schemas-microsoft-com:vml";
 
         private struct Relationship
         {
@@ -98,10 +101,15 @@ namespace specgen
                 }));
         }
 
+        private static XElement KeyValue(XNamespace ns, string key, string value)
+        {
+            return new XElement(ns + key,
+                new XAttribute(ns + "val", value));
+        }
+
         private static XElement KeyValue(string key, string value)
         {
-            return new XElement(W + key,
-                new XAttribute(W + "val", value));
+            return KeyValue(W, key, value);
         }
 
         private static XElement KeyValue(string key, string valueName, string value)
@@ -280,20 +288,20 @@ namespace specgen
             return new List<XElement>
             {
                 Run(
-                    properties != null ? RunProperties(properties) : null,
+                    properties != null && properties.Length > 0 ? RunProperties(properties) : null,
                     new XElement(W + "fldChar",
                         new XAttribute(W + "fldCharType", "begin"))),
                 Run(
-                    properties != null ? RunProperties(properties) : null,
+                    properties != null && properties.Length > 0 ? RunProperties(properties) : null,
                     new XElement(W + "instrText",
                         new XAttribute(XNamespace.Xml + "space", "preserve"),
                         value)),
                 Run(
-                    properties != null ? RunProperties(properties) : null,
+                    properties != null && properties.Length > 0 ? RunProperties(properties) : null,
                     new XElement(W + "fldChar",
                         new XAttribute(W + "fldCharType", "separate"))),
                 Run(
-                    properties != null ? RunProperties(properties) : null,
+                    properties != null && properties.Length > 0 ? RunProperties(properties) : null,
                     new XElement(W + "fldChar",
                         new XAttribute(W + "fldCharType", "end")))
             };
@@ -421,12 +429,8 @@ namespace specgen
 
         private static XElement HeaderBorder()
         {
-            return new XElement(W + "bdr",
-                new XElement(W + "bottom",
-                    new XAttribute(W + "val", "single"),
-                    new XAttribute(W + "sz", "4"),
-                    new XAttribute(W + "space", "1"),
-                    new XAttribute(W + "color", "auto")));
+            return new XElement(W + "pBdr",
+                Border("bottom", "single", "4", "1", "auto"));
         }
 
         private static IEnumerable<XElement> Headers()
@@ -521,7 +525,7 @@ namespace specgen
                 KeyValue("suff", "space"),
                 KeyValue("lvlText", text),
                 KeyValue("lvlJc", "left"),
-                RunProperties(
+                ParaProperties(
                     new XElement(W + "ind",
                         new XAttribute(W + "left", indent),
                         new XAttribute(W + "hanging", indent))));
@@ -592,6 +596,44 @@ namespace specgen
                     Number("3", "2"),
                     Number("4", "3"),
                     Number("5", "4")));
+        }
+
+        static XElement Settings()
+        {
+            return Part("/word/settings.xml",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml",
+                null,
+                new XElement(W + "settings",
+                    KeyValue("characterSpacingControl", "doNotCompress"),
+                    KeyValue("decimalSymbol", "."),
+                    KeyValue("defaultTabStop", "360"),
+                    new XElement(W + "evenAndOddHeaders"),
+                    KeyValue("listSeparator", ","),
+                    new XElement(M + "mathPr",
+                        KeyValue(M, "mathFont", "Cambria Math"),
+                        KeyValue(M, "brkBin", "before"),
+                        KeyValue(M, "brkBinSub", "--"),
+                        KeyValue(M, "smallFrac", "0"),
+                        new XElement(M + "dispDef"),
+                        KeyValue(M, "lMargin", "0"),
+                        KeyValue(M, "rMargin", "0"),
+                        KeyValue(M, "defJc", "centerGroup"),
+                        KeyValue(M, "wrapIndent", "1440"),
+                        KeyValue(M, "intLim", "subSup"),
+                        KeyValue(M, "naryLim", "undOvr")
+                    ),
+                    new XElement(W + "shapeDefaults",
+                        new XElement(O + "shapedefaults",
+                            new XAttribute(V + "ext", "edit"),
+                            new XAttribute("spidmax", "1026")),
+                        new XElement(O + "shapelayout",
+                            new XAttribute(V + "ext", "edit"),
+                            new XElement(O + "idmap",
+                                new XAttribute(V + "ext", "edit"),
+                                new XAttribute("data", "1")))),
+                new XElement(W + "zoom", 
+                    new XAttribute(W + "percent", "100"))
+                ));
         }
 
         static XElement NumProperties(string id, string ilvl = null)
@@ -1242,6 +1284,9 @@ namespace specgen
                     new XAttribute(XNamespace.Xmlns + "ors", Ors.NamespaceName),
                     new XAttribute(XNamespace.Xmlns + "prs", Prs.NamespaceName),
                     new XAttribute(XNamespace.Xmlns + "w", W.NamespaceName),
+                    new XAttribute(XNamespace.Xmlns + "m", M.NamespaceName),
+                    new XAttribute(XNamespace.Xmlns + "o", O.NamespaceName),
+                    new XAttribute(XNamespace.Xmlns + "v", V.NamespaceName),
                     PackageRelationships(),
                     DocumentRelationships(),
                     FontTable(),
@@ -1249,6 +1294,7 @@ namespace specgen
                     Footers(),
                     Headers(),
                     Numbering(),
+                    Settings(),
                     Styles(),
                     WebSettings()));
 
