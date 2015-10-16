@@ -296,9 +296,119 @@ namespace specgen
                             new XAttribute(ws + "linePitch", "360")))));
         }
 
+        static IEnumerable<object> TocSection()
+        {
+            yield return Para("TOCHeading",
+                Run(
+                    new XElement(ws + "lastRenderedPageBreak"),
+                    Text("Table of Contents")));
+
+            yield return Para("Text");
+
+            yield return Para(
+                Field(" TOC \\o \"3-9\" \\h \\z \\t \"Heading 1,1,Heading 2,2\" "));
+
+            yield return Para(
+                ParaProperties(
+                    SectionProperties(
+                        new XElement(ws + "footerReference",
+                            new XAttribute(ws + "type", "even"),
+                            new XAttribute(rs + "id", "rId4")),
+                        new XElement(ws + "footerReference",
+                            new XAttribute(ws + "type", "default"),
+                            new XAttribute(rs + "id", "rId5")),
+                        new XElement(ws + "footerReference",
+                            new XAttribute(ws + "type", "first"),
+                            new XAttribute(rs + "id", "rId6")),
+                        new XElement(ws + "headerReference",
+                            new XAttribute(ws + "type", "even"),
+                            new XAttribute(rs + "id", "rId7")),
+                        new XElement(ws + "headerReference",
+                            new XAttribute(ws + "type", "default"),
+                            new XAttribute(rs + "id", "rId8")),
+                        new XElement(ws + "headerReference",
+                            new XAttribute(ws + "type", "first"),
+                            new XAttribute(rs + "id", "rId9")),
+                        KeyValue("type", "oddPage"),
+                        new XElement(ws + "pgSz",
+                            new XAttribute(ws + "w", "12240"),
+                            new XAttribute(ws + "h", "15840")),
+                        new XElement(ws + "pgMar",
+                            new XAttribute(ws + "top", "1440"),
+                            new XAttribute(ws + "right", "1152"),
+                            new XAttribute(ws + "bottom", "1440"),
+                            new XAttribute(ws + "left", "1152"),
+                            new XAttribute(ws + "header", "1022"),
+                            new XAttribute(ws + "footer", "1022"),
+                            new XAttribute(ws + "gutter", "0")),
+                        new XElement(ws + "pgNumType",
+                            new XAttribute(ws + "fmt", "lowerRoman"),
+                            new XAttribute(ws + "start", "1")),
+                        new XElement(ws + "cols",
+                            new XAttribute(ws + "space", "720")),
+                        new XElement(ws + "titlePg"),
+                        new XElement(ws + "docGrid",
+                            new XAttribute(ws + "linePitch", "360")))));
+        }
+
+        static IEnumerable<object> Section(XElement section, int level, bool first)
+        {
+            yield return Para($"Heading{level}",
+                Run(
+                    level == 1 ? new XElement(ws + "lastRenderedPageBreak") : null,
+                    Text(section.Attribute("title").Value)));
+
+
+
+            if (level == 1)
+            {
+                yield return Para(
+                    ParaProperties(
+                        SectionProperties(
+                            first ? new XElement(ws + "headerReference",
+                                new XAttribute(ws + "type", "even"),
+                                new XAttribute(rs + "id", "rId10")) : null,
+                            first ? new XElement(ws + "headerReference",
+                                new XAttribute(ws + "type", "default"),
+                                new XAttribute(rs + "id", "rId11")) : null,
+                            first ? new XElement(ws + "headerReference",
+                                new XAttribute(ws + "type", "first"),
+                                new XAttribute(rs + "id", "rId12")) : null,
+                            KeyValue("type", "oddPage"),
+                            new XElement(ws + "pgSz",
+                                new XAttribute(ws + "w", "12240"),
+                                new XAttribute(ws + "h", "15840")),
+                            new XElement(ws + "pgMar",
+                                new XAttribute(ws + "top", "1440"),
+                                new XAttribute(ws + "right", "1152"),
+                                new XAttribute(ws + "bottom", "1440"),
+                                new XAttribute(ws + "left", "1152"),
+                                new XAttribute(ws + "header", "1022"),
+                                new XAttribute(ws + "footer", "1022"),
+                                new XAttribute(ws + "gutter", "0")),
+                            first ? new XElement(ws + "pgNumType",
+                                new XAttribute(ws + "start", "1")) : null,
+                            new XElement(ws + "cols",
+                                new XAttribute(ws + "space", "720")),
+                            new XElement(ws + "titlePg"),
+                            new XElement(ws + "docGrid",
+                                new XAttribute(ws + "linePitch", "360")))));
+            }
+        } 
+
         static IEnumerable<object> DocumentSections(XDocument spec)
         {
+            var sections = spec.Descendants("specification").Descendants("body").Descendants("section");
+
             yield return TitleSection(spec);
+            yield return TocSection();
+
+            var first = true;
+            foreach (var section in sections)
+            {
+                yield return Section(section, 1, first);
+                first = false;
+            }
         }
 
         static XElement Document(XDocument spec)
