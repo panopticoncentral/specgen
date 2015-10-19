@@ -14,9 +14,14 @@ namespace specgen
         private static readonly XNamespace prs = "http://schemas.openxmlformats.org/package/2006/relationships";
         // ReSharper disable once InconsistentNaming
         private static readonly XNamespace ws = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+        // ReSharper disable once InconsistentNaming
         private static readonly XNamespace m = "http://schemas.openxmlformats.org/officeDocument/2006/math";
+        // ReSharper disable once InconsistentNaming
         private static readonly XNamespace o = "urn:schemas-microsoft-com:office:office";
+        // ReSharper disable once InconsistentNaming
         private static readonly XNamespace v = "urn:schemas-microsoft-com:vml";
+
+        static List<XElement> numbers = new List<XElement>(); 
 
         private struct Relationship
         {
@@ -351,6 +356,323 @@ namespace specgen
                             new XAttribute(ws + "linePitch", "360")))));
         }
 
+        private static string GetMultiLevelName(string baseStyle, int level)
+        {
+            var name = baseStyle;
+
+            if (level != 0)
+            {
+                name += "inList" + level;
+            }
+
+            return name;
+        }
+
+        private static IEnumerable<object> NodeElement(XElement element, bool preserve)
+        {
+            yield break;
+        } 
+
+        private static IEnumerable<object> NodeText(string text, string style, bool preserveLines, bool first)
+        {
+            first = false;
+            yield break;
+        }
+
+        private static IEnumerable<object> Term(XElement term)
+        {
+            switch (term.Name.LocalName)
+            {
+                case "list":
+                    yield return Run(Text("list(", true));
+                    yield return Term(term.Elements().First());
+                    yield return Run(Text(")", true));
+                    break;
+
+                case "nt":
+                    yield return Run("GrammarNon-Terminal",
+                        Text(term.Value, true));
+                    break;
+
+                case "t":
+                case "verbatim":
+                    if (term.Name.LocalName == "verbatim")
+                    {
+                        yield return Run(Text("@"));
+                    }
+                    yield return Run(Text("\""));
+                    yield return Run("GrammarTerminal",
+                        Text(term.Value, true));
+                    yield return Run(Text("\""));
+                    break;
+
+                case "meta":
+                    yield return Run(Text("< ", true));
+
+                    var firstNode = true;
+
+                    foreach (var node in term.Nodes())
+                    {
+                        if (!firstNode)
+                        {
+                            yield return Run(Text(" ", true));
+                        }
+                        firstNode = false;
+
+                        var element = node as XElement;
+                        if (element != null)
+                        {
+                            yield return Term(element);
+                        }
+                        else
+                        {
+                            yield return Run(Text((node as XText)?.ToString().Trim(), true));
+                        }
+                    }
+
+                    yield return Run(Text(" >", true));
+                    break;
+
+                case "star":
+                    yield return Term(term.Elements().First());
+                    yield return Run(Text("*"));
+                    break;
+
+                case "plus":
+                    yield return Term(term.Elements().First());
+                    yield return Run(Text("+"));
+                    break;
+
+                case "opt":
+                    yield return Term(term.Elements().First());
+                    yield return Run(Text("?"));
+                    break;
+
+                case "group":
+                    yield return Run(Text("("));
+
+                    var firstSubTerm = true;
+
+                    foreach (var subTerm in term.Elements())
+                    {
+                        if (!firstSubTerm)
+                        {
+                            yield return Run(Text("  ", true));
+                        }
+                        firstSubTerm = false;
+
+                        yield return Term(subTerm);
+                    }
+
+                    yield return Run(Text(")"));
+                    break;
+            }
+        }
+
+        private static IEnumerable<object> Grammar(IEnumerable<XElement> rules)
+        {
+            foreach (var rule in rules)
+            {
+                var ruleNameRun = Run("GrammarNon-Terminal",
+                    Text(rule.Attribute("name").Value, true));
+
+                var colonRun = Run(Text(":", true));
+
+                if (rule.Elements().Count() == 1 && rule.Elements().First().Name.LocalName == "oneof")
+                {
+                    var oneof = rule.Elements().First();
+                    var oneofRun = Run(Text("  one of", true));
+
+                    var index = 0;
+                    var columns = new List<XElement>();
+                    var rows = new List<XElement>();
+
+                    foreach (var element in oneof.Elements())
+                    {
+                        columns.Add(
+                            new XElement(ws + "tc",
+                                new XElement(ws + "tcPr",
+                                    new XElement(ws + "tcW",
+                                        new XAttribute(ws + "w", "2700"),
+                                        new XAttribute(ws + "type", "dxa"))),
+                                Para(
+                                    ParaProperties(
+                                        KeyValue("pStyle", "Grammar"),
+                                        new XElement(ws + "ind",
+                                            new XAttribute(ws + "left", "0"),
+                                            new XAttribute(ws + "firstLine", "0"))),
+                                    Term(element))));
+
+                        index++;
+
+                        if (index == 3)
+                        {
+                            rows.Add(new XElement(ws + "tr", columns));
+                            columns.Clear();
+                            index = 0;
+                        }
+                    }
+
+                    if (index > 0)
+                    {
+                        rows.Add(new XElement(ws + "tr", columns));
+                    }
+
+                    yield return Para("Grammar",
+                        ruleNameRun,
+                        colonRun);
+
+                    yield return new XElement(ws + "tbl",
+                        new XElement(ws + "tblPr",
+                            new XElement(ws + "tblInd",
+                                new XAttribute(ws + "w", "1080"),
+                                new XAttribute(ws + "type", "dxa")),
+                            new XElement(ws + "tblBorders",
+                                Border("top", "none", "0", "0", "auto"),
+                                Border("left", "none", "0", "0", "auto"),
+                                Border("bottom", "none", "0", "0", "auto"),
+                                Border("right", "none", "0", "0", "auto"),
+                                Border("insideH", "none", "0", "0", "auto"),
+                                Border("insideV", "none", "0", "0", "auto"))),
+                        rows);
+                }
+                else
+                {
+                    var productions = new List<object>();
+                    var first = true;
+
+                    foreach (var production in rule.Descendants("production"))
+                    {
+                        if (!first)
+                        {
+                            productions.Add(Break());
+                        }
+                        first = false;
+
+                        var firstTerm = true;
+                        foreach (var term in production.Elements())
+                        {
+                            if (!firstTerm)
+                            {
+                                productions.Add(Run(Text("  ", true)));
+                            }
+                            firstTerm = false;
+
+                            productions.Add(Term(term));
+                        }
+                    }
+
+                    yield return Para("Grammar",
+                        ruleNameRun,
+                        colonRun,
+                        Break(),
+                        productions);
+                }
+            }
+        } 
+
+        private static IEnumerable<object> Block(XElement block, XElement additionalStyle = null, int level = 0)
+        {
+            var style = "Text";
+            var preserveLines = false;
+
+            switch (block.Name.LocalName)
+            {
+                case "alert":
+                    style = GetMultiLevelName("AlertText", level);
+                    break;
+
+                case "annotation":
+                    style = "Annotation";
+                    break;
+
+                case "bulletedList":
+                    foreach (var item in block.Elements())
+                    {
+                        yield return Block(item, null, level + 1);
+                    }
+                    yield break;
+
+                case "bulletedText":
+                    style = "BulletedList" + level.ToString();
+                    break;
+
+                case "code":
+                    style = GetMultiLevelName("Code", level);
+                    preserveLines = true;
+                    break;
+
+                case "deprecated":
+                    style = GetMultiLevelName("Deprecated", level);
+                    break;
+
+                case "grammar":
+                    yield return Grammar(block.Descendants("token").Union(block.Descendants("syntax")));
+                    yield break;
+
+                case "issue":
+                    style = "Issue";
+                    break;
+
+                case "label":
+                    style = GetMultiLevelName("Label", level);
+                    break;
+
+                case "numberedList":
+                    numbers.Add(
+                        new XElement(ws + "num",
+                            new XAttribute(ws + "numId", $"{numbers.Count + 6}"),
+                            KeyValue("abstractNumId", (level + 3).ToString()),
+                            new XElement(ws + "lvlOverride",
+                                new XAttribute(ws + "ilvl", "0"),
+                                KeyValue("startOverride", "1"))));
+
+                    additionalStyle =
+                        new XElement(ws + "numPr",
+                            KeyValue("ilvl", "0"),
+                            KeyValue("numId", (numbers.Count + 5).ToString()));
+
+                    foreach (var item in block.Elements())
+                    {
+                        yield return Block(item, additionalStyle, level + 1);
+                        additionalStyle = null;
+                    }
+
+                    yield break;
+
+                case "numberedText":
+                    style = "NumberedList" + level.ToString();
+                    break;
+
+                case "tableSpacing":
+                    style = "TableSpacing";
+                    break;
+
+                case "text":
+                    style = GetMultiLevelName("Text", level);
+                    break;
+            }
+
+            var first = true;
+            var runs = new List<object>();
+
+            foreach (var node in block.Nodes())
+            {
+                var element = node as XElement;
+                runs.Add(element != null ?
+                    NodeElement(element, preserveLines) :
+                    NodeText(((XText)node).Value, null, preserveLines, first));
+                first = false;
+            }
+
+            yield return Para(
+                ParaProperties(
+                    KeyValue("pStyle", style),
+                    additionalStyle),
+                runs
+                );
+        }
+
         static IEnumerable<object> Section(XElement section, int level, bool first)
         {
             yield return Para($"Heading{level}",
@@ -358,7 +680,17 @@ namespace specgen
                     level == 1 ? new XElement(ws + "lastRenderedPageBreak") : null,
                     Text(section.Attribute("title").Value)));
 
-
+            foreach (var element in section.Elements())
+            {
+                if (element.Name.LocalName == "section")
+                {
+                    yield return Section(element, level + 1, false);
+                }
+                else
+                {
+                    yield return Block(element);
+                }
+            }
 
             if (level == 1)
             {
@@ -434,6 +766,14 @@ namespace specgen
         static XElement Para(params object[] elements)
         {
             return new XElement(ws + "p",
+                elements);
+        }
+
+        static XElement Run(string style, params object[] elements)
+        {
+            return Run(
+                RunProperties(
+                    KeyValue("rStyle", style)),
                 elements);
         }
 
