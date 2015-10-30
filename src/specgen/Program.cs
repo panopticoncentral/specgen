@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 
 namespace specgen
@@ -277,6 +278,7 @@ namespace specgen
 
             yield return Para(
                 ParaProperties(
+                    KeyValue("pStyle", "Text"),
                     SectionProperties(
                         new XElement(ws + "footerReference",
                             new XAttribute(ws + "type", "even"),
@@ -315,6 +317,7 @@ namespace specgen
 
             yield return Para(
                 ParaProperties(
+                    KeyValue("pStyle", "Text"),
                     SectionProperties(
                         new XElement(ws + "footerReference",
                             new XAttribute(ws + "type", "even"),
@@ -370,13 +373,125 @@ namespace specgen
 
         private static IEnumerable<object> NodeElement(XElement element, bool preserve)
         {
-            yield break;
+            switch (element.Name.LocalName)
+            {
+                case "br":
+                    yield return Break();
+                    break;
+
+                case "em":
+                    yield return NodeText(((XText) element.Nodes().First()).Value, "Bold", preserve, true);
+                    break;
+
+                case "i":
+                    yield return NodeText(((XText)element.Nodes().First()).Value, "Italic", preserve, true);
+                    break;
+
+                case "emi":
+                    yield return NodeText(((XText)element.Nodes().First()).Value, "BoldItalic", preserve, true);
+                    break;
+
+                case "lbl":
+                    yield return NodeText(((XText)element.Nodes().First()).Value, "LabelEmbedded", preserve, true);
+                    break;
+
+                case "c":
+                    yield return NodeText(((XText)element.Nodes().First()).Value, "CodeEmbedded", preserve, true);
+                    break;
+
+                case "sub":
+                    yield return NodeText(((XText)element.Nodes().First()).Value, "Subscript", preserve, true);
+                    break;
+
+                case "sup":
+                    yield return NodeText(((XText)element.Nodes().First()).Value, "Superscript", preserve, true);
+                    break;
+
+                case "str":
+                    yield return NodeText(((XText)element.Nodes().First()).Value, "Strikethrough", preserve, true);
+                    break;
+
+                case "ref":
+                    yield return NodeText(((XText)element.Nodes().First()).Value, "GrammarReference", preserve, true);
+                    break;
+
+                case "def":
+                    yield return NodeText(((XText)element.Nodes().First()).Value, "Definition", preserve, true);
+                    break;
+            }
         } 
 
         private static IEnumerable<object> NodeText(string text, string style, bool preserveLines, bool first)
         {
-            first = false;
-            yield break;
+            var finalText = new StringBuilder();
+            var seenCharacter = false;
+            var whitespacePrevious = false;
+
+            if (preserveLines)
+            {
+                var lines = text.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
+                var indent = -1;
+
+                for (var i = 0; i < lines.Length; i++)
+                {
+                    var line = lines[i];
+
+                    if (indent == -1)
+                    {
+                        indent = 0;
+
+                        while (indent < line.Length && line[indent] == ' ')
+                        {
+                            indent++;
+                        }
+
+                        if (indent == line.Length)
+                        {
+                            continue;
+                        }
+                    }
+
+                    if (line.Length < indent)
+                    {
+                        continue;
+                    }
+
+                    line = line.Substring(indent);
+
+                    yield return Run(style, Text(line, true));
+
+                    if (i != lines.Length - 2)
+                    {
+                        yield return Break();
+                    }
+                }
+            }
+            else
+            {
+                foreach (var c in text)
+                {
+                    if (((first && !seenCharacter) || whitespacePrevious) && (c == ' ' || c == '\r' || c == '\n'))
+                    {
+                        continue;
+                    }
+
+                    if (c == '\r' || c == '\n')
+                    {
+                        finalText.Append(' ');
+                        whitespacePrevious = true;
+                    }
+                    else
+                    {
+                        seenCharacter = true;
+                        whitespacePrevious = (c == ' ');
+                        finalText.Append(c);
+                    }
+                }
+
+                yield return Run(
+                    style,
+                    Text(finalText.ToString(), true));
+            }
         }
 
         private static IEnumerable<object> Term(XElement term)
@@ -478,10 +593,13 @@ namespace specgen
 
                 var colonRun = Run(Text(":", true));
 
+                XElement oneOfRun = null;
+
                 if (rule.Elements().Count() == 1 && rule.Elements().First().Name.LocalName == "oneof")
                 {
                     var oneof = rule.Elements().First();
-                    var oneofRun = Run(Text("  one of", true));
+
+                    oneOfRun = Run(Text("  one of", true));
 
                     var index = 0;
                     var columns = new List<XElement>();
@@ -520,7 +638,8 @@ namespace specgen
 
                     yield return Para("Grammar",
                         ruleNameRun,
-                        colonRun);
+                        colonRun,
+                        oneOfRun);
 
                     yield return new XElement(ws + "tbl",
                         new XElement(ws + "tblPr",
@@ -541,7 +660,7 @@ namespace specgen
                     var productions = new List<object>();
                     var first = true;
 
-                    foreach (var production in rule.Descendants("production"))
+                    foreach (var production in rule.Elements("production"))
                     {
                         if (!first)
                         {
@@ -607,7 +726,7 @@ namespace specgen
                     break;
 
                 case "grammar":
-                    yield return Grammar(block.Descendants("token").Union(block.Descendants("syntax")));
+                    yield return Grammar(block.Elements("token").Union(block.Elements("syntax")));
                     yield break;
 
                 case "issue":
@@ -696,6 +815,7 @@ namespace specgen
             {
                 yield return Para(
                     ParaProperties(
+                        KeyValue("pStyle", "Text"),
                         SectionProperties(
                             first ? new XElement(ws + "headerReference",
                                 new XAttribute(ws + "type", "even"),
@@ -730,7 +850,7 @@ namespace specgen
 
         static IEnumerable<object> DocumentSections(XDocument spec)
         {
-            var sections = spec.Descendants("specification").Descendants("body").Descendants("section");
+            var sections = spec.Elements("specification").Elements("body").Elements("section");
 
             yield return TitleSection(spec);
             yield return TocSection();
@@ -772,8 +892,10 @@ namespace specgen
         static XElement Run(string style, params object[] elements)
         {
             return Run(
-                RunProperties(
-                    KeyValue("rStyle", style)),
+                (style != null) ?
+                    RunProperties(
+                        KeyValue("rStyle", style)) :
+                        null,
                 elements);
         }
 
@@ -1851,7 +1973,7 @@ namespace specgen
                 }
             }
 
-            foreach (var missingToken in missingTokenReferences.OrderBy(v => v))
+            foreach (var missingToken in missingTokenReferences.OrderBy(value => value))
             {
                 Console.WriteLine($"Error: Token reference to missing token '{missingToken}'.");
             }
@@ -1908,7 +2030,7 @@ namespace specgen
                 }
             }
 
-            foreach (var missingSyntax in missingSyntaxReferences.OrderBy(v => v))
+            foreach (var missingSyntax in missingSyntaxReferences.OrderBy(value => value))
             {
                 Console.WriteLine($"Error: Syntax reference to missing syntax '{missingSyntax}'.");
             }
@@ -1918,12 +2040,12 @@ namespace specgen
                 Console.WriteLine($"Error: Missing {missingSyntaxReferences.Count} syntax references.");
             }
 
-            foreach (var tokenSymbol in tokenSymbols.Where(v => v.Key != "start" && !v.Value))
+            foreach (var tokenSymbol in tokenSymbols.Where(value => value.Key != "start" && !value.Value))
             {
                 Console.WriteLine($"Error: Token '{tokenSymbol.Key}' is never referenced.");
             }
 
-            foreach (var syntaxSymbol in syntaxSymbols.Where(v => v.Key != "start" && !v.Value))
+            foreach (var syntaxSymbol in syntaxSymbols.Where(value => value.Key != "start" && !value.Value))
             {
                 Console.WriteLine($"Error: Syntax '{syntaxSymbol.Key}' is never referenced.");
             }
