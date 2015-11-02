@@ -22,27 +22,7 @@ namespace specgen
         // ReSharper disable once InconsistentNaming
         private static readonly XNamespace v = "urn:schemas-microsoft-com:vml";
 
-        static readonly List<XElement> Numbers = new List<XElement>(); 
-
-        private struct FontSignature
-        {
-            public string Usb0;
-            public string Usb1;
-            public string Usb2;
-            public string Usb3;
-            public string Csb0;
-            public string Csb1;
-        }
-
-        private struct Font
-        {
-            public string Name;
-            public string Panose1;
-            public string Charset;
-            public string Family;
-            public string Pitch;
-            public FontSignature Sig;
-        }
+        private static readonly List<XElement> Numbers = new List<XElement>(); 
 
         private static XElement Relationship(string id, string type, string target)
         {
@@ -116,26 +96,28 @@ namespace specgen
                 new XAttribute(ws + valueName, value));
         }
 
-        private static XElement Fonts(IEnumerable<Font> fonts)
+        private static XElement FontSignature(string usb0, string usb1, string usb2, string usb3, string csb0,
+            string csb1)
         {
-            return new XElement(ws + "fonts",
-                new XAttribute(XNamespace.Xmlns + "w", ws.NamespaceName),
-                from f in fonts
-                select new XElement(ws + "font",
-                    new XAttribute(ws + "name", f.Name),
-                    KeyValue("panose1", f.Panose1),
-                    KeyValue("charset", f.Charset),
-                    KeyValue("family", f.Family),
-                    KeyValue("pitch", f.Pitch),
-                    new XElement(ws + "sig",
-                        new XAttribute(ws + "usb0", f.Sig.Usb0),
-                        new XAttribute(ws + "usb1", f.Sig.Usb1),
-                        new XAttribute(ws + "usb2", f.Sig.Usb2),
-                        new XAttribute(ws + "usb3", f.Sig.Usb3),
-                        new XAttribute(ws + "csb0", f.Sig.Csb0),
-                        new XAttribute(ws + "csb1", f.Sig.Csb1)
-                        )
-                    ));
+            return new XElement(ws + "sig",
+                new XAttribute(ws + "usb0", usb0),
+                new XAttribute(ws + "usb1", usb1),
+                new XAttribute(ws + "usb2", usb2),
+                new XAttribute(ws + "usb3", usb3),
+                new XAttribute(ws + "csb0", csb0),
+                new XAttribute(ws + "csb1", csb1)
+                );
+        }
+
+        private static XElement Font(string name, string panose1, string charset, string family, string pitch, XElement signature)
+        {
+            return new XElement(ws + "font",
+                new XAttribute(ws + "name", name),
+                KeyValue("panose1", panose1),
+                KeyValue("charset", charset),
+                KeyValue("family", family),
+                KeyValue("pitch", pitch),
+                signature);
         }
 
         private static XElement FontTable()
@@ -144,93 +126,21 @@ namespace specgen
                 "/word/fontTable.xml",
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml",
                 null,
-                Fonts(new List<Font>
-                {
-                    new Font
-                    {
-                        Name ="Arial",
-                        Panose1="020B0604020202020204",
-                        Charset="00",
-                        Family="swiss",
-                        Pitch="variable",
-                        Sig = new FontSignature { Usb0="E0002AFF", Usb1="C0007843", Usb2="00000009", Usb3="00000000", Csb0="000001FF", Csb1="00000000"}
-                    },
-                    new Font
-                    {
-                        Name ="Calibri",
-                        Panose1="020F0502020204030204",
-                        Charset="00",
-                        Family="swiss",
-                        Pitch="variable",
-                        Sig = new FontSignature { Usb0="E10002FF", Usb1="4000ACFF", Usb2="00000009", Usb3="00000000", Csb0="0000019F", Csb1="00000000"}
-                    },
-                    new Font
-                    {
-                        Name ="Cambria",
-                        Panose1="02040503050406030204",
-                        Charset="00",
-                        Family="roman",
-                        Pitch="variable",
-                        Sig = new FontSignature { Usb0="A00002EF", Usb1="4000004B", Usb2="00000000", Usb3="00000000", Csb0="0000019F", Csb1="00000000"}
-                    },
-                    new Font
-                    {
-                        Name ="Cambria Math",
-                        Panose1="02040503050406030204",
-                        Charset="00",
-                        Family="roman",
-                        Pitch="variable",
-                        Sig = new FontSignature { Usb0="A00002EF", Usb1="420020EB", Usb2="00000000", Usb3="00000000", Csb0="0000019F", Csb1="00000000"}
-                    },
-                    new Font
-                    {
-                        Name ="Consolas",
-                        Panose1="020B0609020204030204",
-                        Charset="00",
-                        Family="modern",
-                        Pitch="fixed",
-                        Sig = new FontSignature { Usb0="E10002FF", Usb1="4000FCFF", Usb2="00000009", Usb3="00000000", Csb0="0000019F", Csb1="00000000"}
-                    },
-                    new Font
-                    {
-                        Name ="Courier New",
-                        Panose1="02070309020205020404",
-                        Charset="00",
-                        Family="modern",
-                        Pitch="fixed",
-                        Sig = new FontSignature { Usb0="E0002AFF", Usb1="C0007843", Usb2="00000009", Usb3="00000000", Csb0="000001FF", Csb1="00000000"}
-                    },
-                    new Font
-                    {
-                        Name ="Symbol",
-                        Panose1="05050102010706020507",
-                        Charset="02",
-                        Family="roman",
-                        Pitch="variable",
-                        Sig = new FontSignature { Usb0="00000000", Usb1="10000000", Usb2="00000000", Usb3="00000000", Csb0="80000000", Csb1="00000000"}
-                    },
-                    new Font
-                    {
-                        Name ="Tahoma",
-                        Panose1="020B0604030504040204",
-                        Charset="00",
-                        Family="swiss",
-                        Pitch="variable",
-                        Sig = new FontSignature { Usb0="E1002EFF", Usb1="C000605B", Usb2="00000029", Usb3="00000000", Csb0="000101FF", Csb1="00000000"}
-                    },
-                    new Font
-                    {
-                        Name ="Times New Roman",
-                        Panose1="02020603050405020304",
-                        Charset="00",
-                        Family="roman",
-                        Pitch="variable",
-                        Sig = new FontSignature { Usb0="E0002AFF", Usb1="C0007841", Usb2="00000009", Usb3="00000000", Csb0="000001FF", Csb1="00000000"}
-                    }
-                }));
+                new XElement(ws + "fonts",
+                    new XAttribute(XNamespace.Xmlns + "w", ws.NamespaceName),
+                    Font("Arial", "020B0604020202020204", "00", "swiss", "variable", FontSignature("E0002AFF", "C0007843", "00000009", "00000000", "000001FF", "00000000")),
+                    Font("Calibri", "020F0502020204030204", "00", "swiss", "variable", FontSignature("E10002FF", "4000ACFF", "00000009", "00000000", "0000019F", "00000000")),
+                    Font("Cambria", "02040503050406030204", "00", "roman", "variable", FontSignature("A00002EF", "4000004B", "00000000", "00000000", "0000019F", "00000000")),
+                    Font("Cambria Math", "02040503050406030204", "00", "roman", "variable", FontSignature("A00002EF", "420020EB", "00000000", "00000000", "0000019F", "00000000")),
+                    Font("Consolas", "020B0609020204030204", "00", "modern", "fixed", FontSignature("E10002FF", "4000FCFF", "00000009", "00000000", "0000019F", "00000000")),
+                    Font("Courier New", "02070309020205020404", "00", "modern", "fixed", FontSignature("E0002AFF", "C0007843", "00000009", "00000000", "000001FF", "00000000")),
+                    Font("Symbol", "05050102010706020507", "02", "roman", "variable", FontSignature("00000000", "10000000", "00000000", "00000000", "80000000", "00000000")),
+                    Font("Tahoma", "020B0604030504040204", "00", "swiss", "variable", FontSignature("E1002EFF", "C000605B", "00000029", "00000000", "000101FF", "00000000")),
+                    Font("Times New Roman", "02020603050405020304", "00", "roman", "variable", FontSignature("E0002AFF", "C0007841", "00000009", "00000000", "000001FF", "00000000"))
+                ));
         }
 
-        static IEnumerable<object> TitleSection(XDocument spec)
+        private static IEnumerable<object> TitleSection(XDocument spec)
         {
             var head = spec.Element("specification")?.Element("head");
 
@@ -292,7 +202,7 @@ namespace specgen
                             new XAttribute(ws + "linePitch", "360")))));
         }
 
-        static IEnumerable<object> TocSection()
+        private static IEnumerable<object> TocSection()
         {
             yield return Para("TOCHeading",
                 Run(
@@ -779,7 +689,7 @@ namespace specgen
                 );
         }
 
-        static IEnumerable<object> Section(XElement section, int level, bool first)
+        private static IEnumerable<object> Section(XElement section, int level, bool first)
         {
             yield return Para($"Heading{level}",
                 Run(
@@ -833,9 +743,9 @@ namespace specgen
                             new XElement(ws + "docGrid",
                                 new XAttribute(ws + "linePitch", "360")))));
             }
-        } 
+        }
 
-        static IEnumerable<object> DocumentSections(XDocument spec)
+        private static IEnumerable<object> DocumentSections(XDocument spec)
         {
             var sections = spec.Elements("specification").Elements("body").Elements("section");
 
@@ -850,7 +760,7 @@ namespace specgen
             }
         }
 
-        static XElement Document(XDocument spec)
+        private static XElement Document(XDocument spec)
         {
             return Part("/word/document.xml",
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml",
@@ -862,7 +772,7 @@ namespace specgen
                         DocumentSections(spec))));
         }
 
-        static XElement Para(string style, params object[] elements)
+        private static XElement Para(string style, params object[] elements)
         {
             return Para(
                 ParaProperties(
@@ -870,13 +780,13 @@ namespace specgen
                 elements);
         }
 
-        static XElement Para(params object[] elements)
+        private static XElement Para(params object[] elements)
         {
             return new XElement(ws + "p",
                 elements);
         }
 
-        static XElement Run(string style, params object[] elements)
+        private static XElement Run(string style, params object[] elements)
         {
             return Run(
                 (style != null) ?
@@ -886,48 +796,48 @@ namespace specgen
                 elements);
         }
 
-        static XElement Run(params object[] elements)
+        private static XElement Run(params object[] elements)
         {
             return new XElement(ws + "r",
                 elements);
         }
 
-        static XElement Text(string text, bool preserve = false)
+        private static XElement Text(string text, bool preserve = false)
         {
             return new XElement(ws + "t",
                 preserve ? new XAttribute(XNamespace.Xml + "space", "preserve") : null,
                 text);
         }
 
-        static XElement Break()
+        private static XElement Break()
         {
             return new XElement(ws + "br");
         }
 
-        static XElement Tab()
+        private static XElement Tab()
         {
             return new XElement(ws + "tab");
         }
 
-        static XElement SectionProperties(params object[] elements)
+        private static XElement SectionProperties(params object[] elements)
         {
             return new XElement(ws + "sectPr",
                 elements);
         }
 
-        static XElement ParaProperties(params object[] elements)
+        private static XElement ParaProperties(params object[] elements)
         {
             return new XElement(ws + "pPr",
                 elements);
         }
 
-        static XElement RunProperties(params object[] elements)
+        private static XElement RunProperties(params object[] elements)
         {
             return new XElement(ws + "rPr",
                 elements);
         }
 
-        static IEnumerable<XElement> Field(string value, params object[] properties)
+        private static IEnumerable<XElement> Field(string value, params object[] properties)
         {
             return new List<XElement>
             {
@@ -951,7 +861,7 @@ namespace specgen
             };
         }
 
-        static XElement Tabs(params Tuple<string, string>[] tabs)
+        private static XElement Tabs(params Tuple<string, string>[] tabs)
         {
             return new XElement(ws + "tabs",
                 from t in tabs
@@ -960,7 +870,7 @@ namespace specgen
                     new XAttribute(ws + "pos", t.Item2)));
         }
 
-        static XElement Tabs(params Tuple<string, string, string>[] tabs)
+        private static XElement Tabs(params Tuple<string, string, string>[] tabs)
         {
             return new XElement(ws + "tabs",
                 from t in tabs
@@ -970,7 +880,7 @@ namespace specgen
                     new XAttribute(ws + "leader", t.Item3)));
         }
 
-        static XElement StandardTabs()
+        private static XElement StandardTabs()
         {
             return Tabs(
                 new Tuple<string, string>("clear", "4320"),
@@ -978,7 +888,7 @@ namespace specgen
                 new Tuple<string, string>("right", "9936"));
         }
 
-        static XElement Footer(string name, params object[] elements)
+        private static XElement Footer(string name, params object[] elements)
         {
             return Part($"/word/{name}.xml",
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
@@ -989,7 +899,7 @@ namespace specgen
                         elements)));
         }
 
-        static IEnumerable<XElement> Footers()
+        private static IEnumerable<XElement> Footers()
         {
             return new List<XElement>
             {
@@ -1062,7 +972,7 @@ namespace specgen
             };
         }
 
-        static XElement Header(string name, params object[] elements)
+        private static XElement Header(string name, params object[] elements)
         {
             return Part($"/word/{name}.xml",
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
@@ -1139,7 +1049,7 @@ namespace specgen
             };
         }
 
-        static XElement BulletedList(string style, string tab)
+        private static XElement BulletedList(string style, string tab)
         {
             return new XElement(ws + "lvl",
                 new XAttribute(ws + "ilvl", "0"),
@@ -1161,7 +1071,7 @@ namespace specgen
                         new XAttribute(ws + "hint", "default"))));
         }
 
-        static XElement Heading(string ilvl, string style, string text, string indent)
+        private static XElement Heading(string ilvl, string style, string text, string indent)
         {
             return new XElement(ws + "lvl",
                 new XAttribute(ws + "ilvl", ilvl),
@@ -1177,7 +1087,7 @@ namespace specgen
                         new XAttribute(ws + "hanging", indent))));
         }
 
-        static XElement NumberedList(string style, string tab)
+        private static XElement NumberedList(string style, string tab)
         {
             return new XElement(ws + "lvl",
                 new XAttribute(ws + "ilvl", "0"),
@@ -1197,7 +1107,7 @@ namespace specgen
                         new XAttribute(ws + "hint", "default"))));
         }
 
-        static XElement AbstractNum(string id, string nsid, params object[] lvls)
+        private static XElement AbstractNum(string id, string nsid, params object[] lvls)
         {
             return new XElement(ws + "abstractNum",
                 new XAttribute(ws + "abstractNumId", id),
@@ -1206,14 +1116,14 @@ namespace specgen
                 lvls);
         }
 
-        static XElement Number(string id, string abstractId)
+        private static XElement Number(string id, string abstractId)
         {
             return new XElement(ws + "num",
                 new XAttribute(ws + "numId", id),
                 KeyValue("abstractNumId", abstractId));
         }
 
-        static XElement Numbering()
+        private static XElement Numbering()
         {
             return Part("/word/numbering.xml",
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml",
@@ -1246,7 +1156,7 @@ namespace specgen
                     Numbers));
         }
 
-        static XElement Settings()
+        private static XElement Settings()
         {
             return Part("/word/settings.xml",
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml",
@@ -1288,14 +1198,14 @@ namespace specgen
                 ));
         }
 
-        static XElement NumProperties(string id, string ilvl = null)
+        private static XElement NumProperties(string id, string ilvl = null)
         {
             return new XElement(ws + "numPr",
                 ilvl != null ? KeyValue("ilvl", ilvl) : null,
                 KeyValue("numId", id));
         }
 
-        static XElement Style(bool paragraph, bool custom, bool def, string id, string name, bool quick, string basedOn, string next, bool hidden, bool redefine, string link, params object[] props)
+        private static XElement Style(bool paragraph, bool custom, bool def, string id, string name, bool quick, string basedOn, string next, bool hidden, bool redefine, string link, params object[] props)
         {
             return new XElement(ws + "style",
                 new XAttribute(ws + "type", paragraph ? "paragraph" : "character"),
@@ -1313,7 +1223,7 @@ namespace specgen
                 props);
         }
 
-        static XElement Border(string type, string stroke, string size, string space, string color, string shadow = null)
+        private static XElement Border(string type, string stroke, string size, string space, string color, string shadow = null)
         {
             return new XElement(ws + type,
                 new XAttribute(ws + "val", stroke),
@@ -1323,7 +1233,7 @@ namespace specgen
                 shadow != null ? new XAttribute(ws + "shadow", shadow) : null);
         }
 
-        static XElement Styles()
+        private static XElement Styles()
         {
             return Part("/word/styles.xml",
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml",
@@ -1910,7 +1820,7 @@ namespace specgen
                         ))));
         }
 
-        static XElement WebSettings()
+        private static XElement WebSettings()
         {
             return Part("/word/webSettings.xml",
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml",
@@ -2048,7 +1958,7 @@ namespace specgen
             }
         }
 
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
             if (args.Length != 2)
             {
