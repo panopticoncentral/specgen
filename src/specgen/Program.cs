@@ -22,14 +22,7 @@ namespace specgen
         // ReSharper disable once InconsistentNaming
         private static readonly XNamespace v = "urn:schemas-microsoft-com:vml";
 
-        static List<XElement> numbers = new List<XElement>(); 
-
-        private struct Relationship
-        {
-            public string Id;
-            public string Type;
-            public string Target;
-        }
+        static readonly List<XElement> Numbers = new List<XElement>(); 
 
         private struct FontSignature
         {
@@ -51,14 +44,12 @@ namespace specgen
             public FontSignature Sig;
         }
 
-        private static XElement CreateRelationships(IEnumerable<Relationship> relationships)
+        private static XElement Relationship(string id, string type, string target)
         {
-            return new XElement(prs + "Relationships",
-                from r in relationships
-                select new XElement(prs + "Relationship",
-                    new XAttribute("Id", r.Id),
-                    new XAttribute("Type", $"{rs.NamespaceName}/{r.Type}"),
-                    new XAttribute("Target", r.Target)));
+            return new XElement(prs + "Relationship",
+                new XAttribute("Id", id),
+                new XAttribute("Type", $"{rs.NamespaceName}/{type}"),
+                new XAttribute("Target", target));
         }
 
         private static XElement Part(string name, string contentType, string padding, XElement data)
@@ -77,10 +68,9 @@ namespace specgen
                 "/_rels/.rels",
                 "application/vnd.openxmlformats-package.relationships+xml",
                 "512",
-                CreateRelationships(new List<Relationship>
-                {
-                    new Relationship {Id = "rId1", Type = "officeDocument", Target = "word/document.xml"}
-                }));
+                new XElement(prs + "Relationships",
+                    Relationship("rId1", "officeDocument", "word/document.xml")
+                ));
         }
 
         private static XElement DocumentRelationships()
@@ -89,25 +79,24 @@ namespace specgen
                 "/word/_rels/document.xml.rels",
                 "application/vnd.openxmlformats-package.relationships+xml",
                 "256",
-                CreateRelationships(new List<Relationship>
-                {
-                    new Relationship {Id = "rId1", Type = "fontTable", Target = "fontTable.xml"},
-                    new Relationship {Id = "rId2", Type = "footer", Target = "footer1.xml"},
-                    new Relationship {Id = "rId3", Type = "footer", Target = "footer2.xml"},
-                    new Relationship {Id = "rId4", Type = "footer", Target = "footer3.xml"},
-                    new Relationship {Id = "rId5", Type = "footer", Target = "footer4.xml"},
-                    new Relationship {Id = "rId6", Type = "footer", Target = "footer5.xml"},
-                    new Relationship {Id = "rId7", Type = "header", Target = "header1.xml"},
-                    new Relationship {Id = "rId8", Type = "header", Target = "header2.xml"},
-                    new Relationship {Id = "rId9", Type = "header", Target = "header3.xml"},
-                    new Relationship {Id = "rId10", Type = "header", Target = "header4.xml"},
-                    new Relationship {Id = "rId11", Type = "header", Target = "header5.xml"},
-                    new Relationship {Id = "rId12", Type = "header", Target = "header6.xml"},
-                    new Relationship {Id = "rId13", Type = "numbering", Target = "numbering.xml"},
-                    new Relationship {Id = "rId14", Type = "settings", Target = "settings.xml"},
-                    new Relationship {Id = "rId15", Type = "styles", Target = "styles.xml"},
-                    new Relationship {Id = "rId16", Type = "webSettings", Target = "webSettings.xml"}
-                }));
+                new XElement(prs + "Relationships",
+                    Relationship("rId1", "fontTable", "fontTable.xml"),
+                    Relationship("rId2", "footer", "footer1.xml"),
+                    Relationship("rId3", "footer", "footer2.xml"),
+                    Relationship("rId4", "footer", "footer3.xml"),
+                    Relationship("rId5", "footer", "footer4.xml"),
+                    Relationship("rId6", "footer", "footer5.xml"),
+                    Relationship("rId7", "header", "header1.xml"),
+                    Relationship("rId8", "header", "header2.xml"),
+                    Relationship("rId9", "header", "header3.xml"),
+                    Relationship("rId10", "header", "header4.xml"),
+                    Relationship("rId11", "header", "header5.xml"),
+                    Relationship("rId12", "header", "header6.xml"),
+                    Relationship("rId13", "numbering", "numbering.xml"),
+                    Relationship("rId14", "settings", "settings.xml"),
+                    Relationship("rId15", "styles", "styles.xml"),
+                    Relationship("rId16", "webSettings", "webSettings.xml")
+                ));
         }
 
         private static XElement KeyValue(XNamespace ns, string key, string value)
@@ -593,13 +582,11 @@ namespace specgen
 
                 var colonRun = Run(Text(":", true));
 
-                XElement oneOfRun = null;
-
                 if (rule.Elements().Count() == 1 && rule.Elements().First().Name.LocalName == "oneof")
                 {
                     var oneof = rule.Elements().First();
 
-                    oneOfRun = Run(Text("  one of", true));
+                    var oneOfRun = Run(Text("  one of", true));
 
                     var index = 0;
                     var columns = new List<XElement>();
@@ -738,9 +725,9 @@ namespace specgen
                     break;
 
                 case "numberedList":
-                    numbers.Add(
+                    Numbers.Add(
                         new XElement(ws + "num",
-                            new XAttribute(ws + "numId", $"{numbers.Count + 6}"),
+                            new XAttribute(ws + "numId", $"{Numbers.Count + 6}"),
                             KeyValue("abstractNumId", (level + 3).ToString()),
                             new XElement(ws + "lvlOverride",
                                 new XAttribute(ws + "ilvl", "0"),
@@ -749,7 +736,7 @@ namespace specgen
                     additionalStyle =
                         new XElement(ws + "numPr",
                             KeyValue("ilvl", "0"),
-                            KeyValue("numId", (numbers.Count + 5).ToString()));
+                            KeyValue("numId", (Numbers.Count + 5).ToString()));
 
                     foreach (var item in block.Elements())
                     {
@@ -1255,7 +1242,8 @@ namespace specgen
                     Number("2", "1"),
                     Number("3", "2"),
                     Number("4", "3"),
-                    Number("5", "4")));
+                    Number("5", "4"),
+                    Numbers));
         }
 
         static XElement Settings()
