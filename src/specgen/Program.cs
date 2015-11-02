@@ -24,14 +24,6 @@ namespace specgen
 
         private static readonly List<XElement> Numbers = new List<XElement>(); 
 
-        private static XElement Relationship(string id, string type, string target)
-        {
-            return new XElement(prs + "Relationship",
-                new XAttribute("Id", id),
-                new XAttribute("Type", $"{rs.NamespaceName}/{type}"),
-                new XAttribute("Target", target));
-        }
-
         private static XElement Part(string name, string contentType, string padding, XElement data)
         {
             return new XElement(Pkg + "part",
@@ -40,6 +32,14 @@ namespace specgen
                 (padding != null) ? new XAttribute(Pkg + "padding", padding) : null,
                 new XElement(Pkg + "xmlData",
                     data));
+        }
+
+        private static XElement Relationship(string id, string type, string target)
+        {
+            return new XElement(prs + "Relationship",
+                new XAttribute("Id", id),
+                new XAttribute("Type", $"{rs.NamespaceName}/{type}"),
+                new XAttribute("Target", target));
         }
 
         private static XElement PackageRelationships()
