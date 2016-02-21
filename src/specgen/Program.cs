@@ -138,7 +138,7 @@ namespace specgen
         {
             if (args.Length != 2)
             {
-                Console.WriteLine("Usage: specgen <input path> <XML output path>");
+                Console.WriteLine("Usage: specgen <input path> <XML output path> <MD output path>");
                 return 1;
             }
 
@@ -151,6 +151,7 @@ namespace specgen
             Console.WriteLine("Writing specification...");
 
             XmlSpecificationWriter.WriteSpecification(spec, args[1]);
+            MarkdownSpecificationWriter.WriteSpecification(spec, args[2]);
 
             return 0;
         }
