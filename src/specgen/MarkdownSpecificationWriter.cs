@@ -1,5 +1,7 @@
 ﻿using System.IO;
+using System.IO.Ports;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Xml.Linq;
 
 namespace specgen
@@ -40,6 +42,46 @@ namespace specgen
             writer.WriteLine("## Table of Contents");
             writer.WriteLine();
             TableOfContentsLevel(spec.Elements("specification").Elements("body").Single(), writer, 0, "");
+            writer.WriteLine();
+            writer.WriteLine("<br/>");
+            writer.WriteLine();
+        }
+
+        private static void Section(XElement section, TextWriter writer, int level, int index, string parentLevel)
+        {
+            writer.WriteLine($"{new string('#', level)} <a name=\"{parentLevel}{index}\"/>{parentLevel}{index} {section.Attribute("title").Value}");
+
+            int subIndex = 1;
+            foreach (var element in section.Elements())
+            {
+                writer.WriteLine();
+                if (element.Name.LocalName == "section")
+                {
+                    Section(element, writer, level + 1, subIndex, $"{parentLevel}{index}.");
+                    subIndex++;
+                }
+                else
+                {
+                    //Block(element, writer);
+                }
+            }
+
+            if (level == 1)
+            {
+                writer.WriteLine();
+                writer.WriteLine("<br/>");
+                writer.WriteLine();
+            }
+        }
+
+        private static void Sections(XDocument spec, TextWriter writer)
+        {
+            int index = 1;
+            foreach (var section in spec.Elements("specification").Elements("body").Single().Elements())
+            {
+                Section(section, writer, 1, index, "");
+                index++;
+            }
         }
 
         public static void WriteSpecification(XDocument spec, string path)
@@ -50,6 +92,7 @@ namespace specgen
                 {
                     TitleSection(spec, writer);
                     TableOfContents(spec, writer);
+                    Sections(spec, writer);
                 }
             }
         }
