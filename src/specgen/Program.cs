@@ -136,7 +136,7 @@ namespace specgen
 
         private static int Main(string[] args)
         {
-            if (args.Length != 2)
+            if (args.Length != 3)
             {
                 Console.WriteLine("Usage: specgen <input path> <XML output path> <MD output path>");
                 return 1;
