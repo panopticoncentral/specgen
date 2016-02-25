@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<specification>
+  <head>
+    <title>Test Specification</title>
+    <version>Version 1.0</version>
+    <draft>Draft 1</draft>
+    <author>Paul Vick</author>
+    <date>January 1, 1980</date>
+  </head>
+  <body>
+    <section title="First section">
+      <text>This is the first section</text>
+      <section title="First subsection">
+        <text>This is the first subsection</text>
+      </section>
+      <section title="Second subsection">
+        <text>This is the second subsection</text>
+        <section title="First subsubsection">
+          <text>This is the first subsubsection.</text>
+        </section>
+      </section>
+    </section>
+    <section title="Second section">
+      <text>This is the second section</text>
+    </section>
+    <section title="Third section">
+      <text>This is the third section</text>
+      <text>
+        This is all the inline formatting. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+        Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+        Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a <br/> break.
+    </text>
+    </section>
+  </body>
+</specification>

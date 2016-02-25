@@ -130,7 +130,7 @@ namespace specgen
                 var nameReference in
                     nameReferences.Where(nr => !tokenSymbols.ContainsKey(nr) && !syntaxSymbols.ContainsKey(nr)))
             {
-                Console.WriteLine($"Error: Missing name reference '{nameReference}.");
+                Console.WriteLine($"Error: Missing name reference '{nameReference}'.");
             }
         }
 
