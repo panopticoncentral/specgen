@@ -98,12 +98,6 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="deprecated" substitutionGroup="block">
-    <xs:complexType mixed="true">
-      <xs:group ref="inline"/>
-    </xs:complexType>
-  </xs:element>
-
   <xs:element name="grammar" substitutionGroup="block">
     <xs:complexType>
       <xs:sequence minOccurs="1" maxOccurs="unbounded">
@@ -213,7 +207,6 @@
           <xs:element ref="alert"/>
           <xs:element ref="bulletedList"/>
           <xs:element ref="code"/>
-          <xs:element ref="deprecated"/>
           <xs:element ref="label"/>
           <xs:element ref="numberedList"/>
           <xs:element ref="text"/>

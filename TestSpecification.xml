@@ -29,7 +29,32 @@
         This is all the inline formatting. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
         Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
         Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
-    </text>
+      </text>
+      <alert>
+        This is alert. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+        Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+        Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.        
+      </alert>
+      <annotation>
+        This is annotation. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+        Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+        Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.        
+      </annotation>
+      <code>
+        This is code. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+        Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+        Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.                
+      </code>
+      <issue>
+        This is issue. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+        Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+        Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.                
+      </issue>
+      <label>
+        This is label. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+        Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+        Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.                
+      </label>
     </section>
   </body>
 </specification>

@@ -610,16 +610,12 @@ namespace specgen
                     yield break;
 
                 case "bulletedText":
-                    style = "BulletedList" + level.ToString();
+                    style = "BulletedList" + level;
                     break;
 
                 case "code":
                     style = GetMultiLevelName("Code", level);
                     preserveLines = true;
-                    break;
-
-                case "deprecated":
-                    style = GetMultiLevelName("Deprecated", level);
                     break;
 
                 case "grammar":
@@ -1358,9 +1354,6 @@ namespace specgen
                             new XElement(ws + "i")
                         )
                     ),
-                    Style(true, true, false, "DeprecatedText", "Deprecated Text", true, "Text", null, false, false, null),
-                    Style(true, true, false, "DeprecatedTextinList1", "Deprecated Text in List 1", true, "TextinList1", null, false, false, null),
-                    Style(true, true, false, "DeprecatedTextinList2", "Deprecated Text in List 2", true, "TextinList2", null, false, false, null),
                     Style(true, true, false, "Grammar", "Grammar", true, "Text", null, false, false, null,
                         ParaProperties(
                             new XElement(ws + "keepLines"),
