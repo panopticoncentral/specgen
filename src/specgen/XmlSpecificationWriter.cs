@@ -359,8 +359,9 @@ namespace specgen
 
                     yield return Run(style, Text(line, true));
 
-                    if (i != lines.Length - 2)
+                    if (i != lines.Length - 1)
                     {
+                        indent = -1;
                         yield return Break();
                     }
                 }
