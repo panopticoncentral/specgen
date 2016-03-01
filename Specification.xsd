@@ -80,7 +80,6 @@
           <xs:element ref="numberedList"/>
           <xs:element ref="text"/>
           <xs:element ref="issue"/>
-          <xs:element ref="grammar"/>
         </xs:choice>
       </xs:sequence>
     </xs:complexType>
@@ -141,7 +140,6 @@
 
   <xs:element name="nt" substitutionGroup="term" type="xs:string"/>
   <xs:element name="t" substitutionGroup="term" type="xs:string"/>
-  <xs:element name="verbatim" substitutionGroup="t" type="xs:string"/>
   <xs:element name="meta" substitutionGroup="term">
     <xs:complexType mixed="true">
       <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -175,13 +173,6 @@
   <xs:element name="group" substitutionGroup="term">
     <xs:complexType>
       <xs:sequence minOccurs="2" maxOccurs="unbounded">
-        <xs:element ref="term"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="list" substitutionGroup="term">
-    <xs:complexType>
-      <xs:sequence minOccurs="1" maxOccurs="1">
         <xs:element ref="term"/>
       </xs:sequence>
     </xs:complexType>

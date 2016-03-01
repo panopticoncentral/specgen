@@ -194,5 +194,39 @@
         <numberedText>Second number</numberedText>
       </numberedList>
     </section>
+    <section title="Eighth section">
+      <grammar>
+        <token name="foo">
+          <oneof>
+            <t>x</t>
+            <t>y</t>
+          </oneof>
+        </token>
+        <token name="bar">
+          <production>
+            <nt>foo</nt>
+            <t>bar</t>
+            <meta>baz with <t>bar</t></meta>
+            <plus>
+              <nt>foo</nt>
+            </plus>
+            <opt>
+              <nt>foo</nt>
+            </opt>
+            <star>
+              <nt>foo</nt>
+            </star>
+          </production>
+          <production>
+            <star>
+              <group>
+                <nt>foo</nt>
+                <t>bar</t>
+              </group>
+            </star>
+          </production>
+        </token>
+      </grammar>
+    </section>
   </body>
 </specification>

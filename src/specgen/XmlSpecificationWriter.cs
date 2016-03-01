@@ -398,23 +398,12 @@ namespace specgen
         {
             switch (term.Name.LocalName)
             {
-                case "list":
-                    yield return Run(Text("list(", true));
-                    yield return Term(term.Elements().First());
-                    yield return Run(Text(")", true));
-                    break;
-
                 case "nt":
                     yield return Run("GrammarNon-Terminal",
                         Text(term.Value, true));
                     break;
 
                 case "t":
-                case "verbatim":
-                    if (term.Name.LocalName == "verbatim")
-                    {
-                        yield return Run(Text("@"));
-                    }
                     yield return Run(Text("\""));
                     yield return Run("GrammarTerminal",
                         Text(term.Value, true));
