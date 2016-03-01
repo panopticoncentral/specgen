@@ -33,28 +33,166 @@
       <alert>
         This is alert. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
         Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
-        Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.        
+        Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
       </alert>
       <annotation>
         This is annotation. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
         Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
-        Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.        
+        Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
       </annotation>
       <code>
         This is code. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
         Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
-        Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.                
+        Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
       </code>
       <issue>
         This is issue. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
         Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
-        Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.                
+        Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
       </issue>
       <label>
         This is label. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
         Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
-        Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.                
+        Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
       </label>
+    </section>
+    <section title="Fourth section">
+      <bulletedList>
+        <bulletedText>This is some bulleted text.</bulletedText>
+        <text>
+          This is all the inline formatting. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+          Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+          Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+        </text>
+        <alert>
+          This is alert. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+          Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+          Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+        </alert>
+        <code>
+          This is code. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+          Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+          Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+        </code>
+        <issue>
+          This is issue. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+          Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+          Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+        </issue>
+        <label>
+          This is label. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+          Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+          Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+        </label>
+        <bulletedList>
+          <bulletedText>This is some bulleted bulleted text.</bulletedText>
+          <text>
+            This is all the inline formatting. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+            Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+            Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+          </text>
+          <alert>
+            This is alert. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+            Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+            Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+          </alert>
+          <code>
+            This is code. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+            Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+            Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+          </code>
+          <issue>
+            This is issue. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+            Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+            Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+          </issue>
+          <label>
+            This is label. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+            Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+            Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+          </label>
+        </bulletedList>
+        <bulletedText>This is some second bulleted text.</bulletedText>
+      </bulletedList>
+    </section>
+    <section title="Fifth section">
+      <numberedList>
+        <numberedText>This is some numbered text.</numberedText>
+        <text>
+          This is all the inline formatting. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+          Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+          Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+        </text>
+        <alert>
+          This is alert. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+          Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+          Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+        </alert>
+        <code>
+          This is code. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+          Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+          Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+        </code>
+        <issue>
+          This is issue. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+          Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+          Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+        </issue>
+        <label>
+          This is label. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+          Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+          Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+        </label>
+        <numberedList>
+          <numberedText>Here is some numbered numbered text.</numberedText>
+          <text>
+            This is all the inline formatting. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+            Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+            Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+          </text>
+          <alert>
+            This is alert. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+            Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+            Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+          </alert>
+          <code>
+            This is code. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+            Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+            Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+          </code>
+          <issue>
+            This is issue. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+            Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+            Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+          </issue>
+          <label>
+            This is label. Here is some <c>code</c>. Here is <i>italic</i>. Here is <em>bold</em>.
+            Here is <emi>bold italic</emi>. Here is a <lbl>label</lbl>. Here is <sup>superscript</sup>. Here is <sub>subscript</sub>.
+            Here is <str>strikethrough</str>. Here is a <ref>reference</ref>. Here is a <def>definition</def>. Here is a<br/><br/>break.
+          </label>
+        </numberedList>
+        <numberedText>Here is a second numbered text.</numberedText>
+      </numberedList>
+    </section>
+    <section title="Sixth section">
+      <bulletedList>
+        <bulletedText>First bullet</bulletedText>
+        <numberedList>
+          <numberedText>First number</numberedText>
+          <numberedText>Second number</numberedText>
+        </numberedList>
+        <bulletedText>Second bullet</bulletedText>
+      </bulletedList>
+    </section>
+    <section title="Seventh section">
+      <numberedList>
+        <numberedText>First number</numberedText>
+        <bulletedList>
+          <bulletedText>First bullet</bulletedText>
+          <bulletedText>Second bullet</bulletedText>
+        </bulletedList>
+        <numberedText>Second number</numberedText>
+      </numberedList>
     </section>
   </body>
 </specification>

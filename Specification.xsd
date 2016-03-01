@@ -209,6 +209,7 @@
           <xs:element ref="code"/>
           <xs:element ref="label"/>
           <xs:element ref="numberedList"/>
+          <xs:element ref="issue"/>
           <xs:element ref="text"/>
         </xs:choice>
       </xs:sequence>
