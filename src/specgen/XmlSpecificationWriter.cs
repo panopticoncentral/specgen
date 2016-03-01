@@ -643,7 +643,7 @@ namespace specgen
                     yield break;
 
                 case "numberedText":
-                    style = "NumberedList" + level.ToString();
+                    style = "NumberedList" + level;
                     break;
 
                 case "tableSpacing":
