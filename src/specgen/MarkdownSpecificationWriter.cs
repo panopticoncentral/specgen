@@ -1,9 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.IO.Ports;
 using System.Linq;
-using System.Net.Mime;
-using System.Runtime.InteropServices;
 using System.Xml.Linq;
 
 namespace specgen
@@ -179,7 +176,13 @@ namespace specgen
 
             switch (block.Name.LocalName)
             {
+                case "alert":
+                case "annotation":
+                    writer.Write("> ");
+                    break;
+
                 case "code":
+                    writer.WriteLine("```");
                     preserveLines = true;
                     break;
             }
@@ -197,6 +200,13 @@ namespace specgen
                     NodeText(((XText)node).Value, preserveLines, first, writer);
                 }
                 first = false;
+            }
+
+            switch (block.Name.LocalName)
+            {
+                case "code":
+                    writer.WriteLine("```");
+                    break;
             }
 
             writer.WriteLine();
