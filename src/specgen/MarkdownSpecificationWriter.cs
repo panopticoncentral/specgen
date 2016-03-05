@@ -46,18 +46,26 @@ namespace specgen
             writer.WriteLine();
         }
 
-        private static void NodeElement(XElement element, bool preserveLines, TextWriter writer)
+        private static void NodeElement(XElement element, bool preserveLines, TextWriter writer, int level)
         {
             switch (element.Name.LocalName)
             {
                 case "br":
-                    writer.WriteLine();
+                    if (preserveLines)
+                    {
+                        writer.WriteLine();
+                        writer.Write(new string(Enumerable.Repeat(' ', level * 2).ToArray()));
+                    }
+                    else
+                    {
+                        writer.Write("<br/>");
+                    }
                     break;
 
                 case "lbl":
                 case "em":
                     writer.Write("**");
-                    NodeText(((XText)element.Nodes().First()).Value, preserveLines, true, writer);
+                    NodeText(((XText)element.Nodes().First()).Value, preserveLines, true, writer, level);
                     writer.Write("**");
                     break;
 
@@ -65,43 +73,43 @@ namespace specgen
                 case "def":
                 case "i":
                     writer.Write("*");
-                    NodeText(((XText)element.Nodes().First()).Value, preserveLines, true, writer);
+                    NodeText(((XText)element.Nodes().First()).Value, preserveLines, true, writer, level);
                     writer.Write("*");
                     break;
 
                 case "emi":
                     writer.Write("**_");
-                    NodeText(((XText)element.Nodes().First()).Value, preserveLines, true, writer);
+                    NodeText(((XText)element.Nodes().First()).Value, preserveLines, true, writer, level);
                     writer.Write("_**");
                     break;
 
                 case "c":
                     writer.Write("`");
-                    NodeText(((XText)element.Nodes().First()).Value, preserveLines, true, writer);
+                    NodeText(((XText)element.Nodes().First()).Value, preserveLines, true, writer, level);
                     writer.Write("`");
                     break;
 
                 case "sub":
                     writer.Write("<sub>");
-                    NodeText(((XText)element.Nodes().First()).Value, preserveLines, true, writer);
+                    NodeText(((XText)element.Nodes().First()).Value, preserveLines, true, writer, level);
                     writer.Write("</sub>");
                     break;
 
                 case "sup":
                     writer.Write("<sup>");
-                    NodeText(((XText)element.Nodes().First()).Value, preserveLines, true, writer);
+                    NodeText(((XText)element.Nodes().First()).Value, preserveLines, true, writer, level);
                     writer.Write("</sup>");
                     break;
 
                 case "str":
                     writer.Write("~~");
-                    NodeText(((XText)element.Nodes().First()).Value, preserveLines, true, writer);
+                    NodeText(((XText)element.Nodes().First()).Value, preserveLines, true, writer, level);
                     writer.Write("~~");
                     break;
             }
         }
 
-        private static void NodeText(string text, bool preserveLines, bool first, TextWriter writer)
+        private static void NodeText(string text, bool preserveLines, bool first, TextWriter writer, int level)
         {
             var seenCharacter = false;
             var whitespacePrevious = false;
@@ -143,6 +151,7 @@ namespace specgen
                     {
                         indent = -1;
                         writer.WriteLine();
+                        writer.Write(new string(Enumerable.Repeat(' ', level * 2).ToArray()));
                     }
                 }
             }
@@ -170,9 +179,29 @@ namespace specgen
             }
         }
 
-        private static void Block(XElement block, TextWriter writer)
+        private static void Block(XElement block, TextWriter writer, int level = 0)
         {
             var preserveLines = false;
+
+            if (level > 0)
+            {
+                switch (block.Name.LocalName)
+                {
+                    case "bulletedText":
+                        writer.Write(new string(Enumerable.Repeat(' ', (level - 1) * 2).ToArray()));
+                        writer.Write("* ");
+                        break;
+
+                    case "numberedText":
+                        writer.Write(new string(Enumerable.Repeat(' ', (level - 1) * 2).ToArray()));
+                        writer.Write("1. ");
+                        break;
+
+                    default:
+                        writer.Write(new string(Enumerable.Repeat(' ', level * 2).ToArray()));
+                        break;
+                }
+            }
 
             switch (block.Name.LocalName)
             {
@@ -183,8 +212,26 @@ namespace specgen
 
                 case "code":
                     writer.WriteLine("```");
+                    writer.Write(new string(Enumerable.Repeat(' ', level * 2).ToArray()));
                     preserveLines = true;
                     break;
+
+                case "bulletedList":
+                case "numberedList":
+                    bool firstItem = true;
+                    foreach (var item in block.Elements())
+                    {
+                        if (firstItem)
+                        {
+                            firstItem = false;
+                        }
+                        else
+                        {
+                            writer.WriteLine();
+                        }
+                        Block(item, writer, level + 1);
+                    }
+                    return;
             }
 
             var first = true;
@@ -193,11 +240,11 @@ namespace specgen
                 var element = node as XElement;
                 if (element != null)
                 {
-                    NodeElement(element, preserveLines, writer);
+                    NodeElement(element, preserveLines, writer, level);
                 }
                 else
                 {
-                    NodeText(((XText)node).Value, preserveLines, first, writer);
+                    NodeText(((XText)node).Value, preserveLines, first, writer, level);
                 }
                 first = false;
             }
@@ -205,7 +252,7 @@ namespace specgen
             switch (block.Name.LocalName)
             {
                 case "code":
-                    writer.WriteLine("```");
+                    writer.Write("```");
                     break;
             }
 
