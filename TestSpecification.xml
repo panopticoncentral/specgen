@@ -187,10 +187,9 @@
     <section title="Eighth section">
       <grammar>
         <token name="foo">
-          <oneof>
-            <t>x</t>
-            <t>y</t>
-          </oneof>
+          <production>
+            <t>bar</t>
+          </production>
         </token>
         <token name="bar">
           <production>

@@ -477,103 +477,38 @@ namespace specgen
         {
             foreach (var rule in rules)
             {
-                var ruleNameRun = Run("GrammarNon-Terminal",
-                    Text(rule.Attribute("name").Value, true));
-
-                var colonRun = Run(Text(":", true));
-
-                if (rule.Elements().Count() == 1 && rule.Elements().First().Name.LocalName == "oneof")
+                var runs = new List<object>
                 {
-                    var oneof = rule.Elements().First();
+                    Run("GrammarNon-Terminal", Text(rule.Attribute("name").Value, true)),
+                    Run(Text(":", true))
+                };
 
-                    var oneOfRun = Run(Text("  one of", true));
+                var first = true;
 
-                    var index = 0;
-                    var columns = new List<XElement>();
-                    var rows = new List<XElement>();
+                runs.Add(Break());
 
-                    foreach (var element in oneof.Elements())
-                    {
-                        columns.Add(
-                            new XElement(ws + "tc",
-                                new XElement(ws + "tcPr",
-                                    new XElement(ws + "tcW",
-                                        new XAttribute(ws + "w", "2700"),
-                                        new XAttribute(ws + "type", "dxa"))),
-                                Para(
-                                    ParaProperties(
-                                        KeyValue("pStyle", "Grammar"),
-                                        new XElement(ws + "ind",
-                                            new XAttribute(ws + "left", "0"),
-                                            new XAttribute(ws + "firstLine", "0"))),
-                                    Term(element))));
-
-                        index++;
-
-                        if (index == 3)
-                        {
-                            rows.Add(new XElement(ws + "tr", columns));
-                            columns.Clear();
-                            index = 0;
-                        }
-                    }
-
-                    if (index > 0)
-                    {
-                        rows.Add(new XElement(ws + "tr", columns));
-                    }
-
-                    yield return Para("Grammar",
-                        ruleNameRun,
-                        colonRun,
-                        oneOfRun);
-
-                    yield return new XElement(ws + "tbl",
-                        new XElement(ws + "tblPr",
-                            new XElement(ws + "tblInd",
-                                new XAttribute(ws + "w", "1080"),
-                                new XAttribute(ws + "type", "dxa")),
-                            new XElement(ws + "tblBorders",
-                                Border("top", "none", "0", "0", "auto"),
-                                Border("left", "none", "0", "0", "auto"),
-                                Border("bottom", "none", "0", "0", "auto"),
-                                Border("right", "none", "0", "0", "auto"),
-                                Border("insideH", "none", "0", "0", "auto"),
-                                Border("insideV", "none", "0", "0", "auto"))),
-                        rows);
-                }
-                else
+                foreach (var production in rule.Elements("production"))
                 {
-                    var productions = new List<object>();
-                    var first = true;
-
-                    foreach (var production in rule.Elements("production"))
+                    if (!first)
                     {
-                        if (!first)
-                        {
-                            productions.Add(Break());
-                        }
-                        first = false;
-
-                        var firstTerm = true;
-                        foreach (var term in production.Elements())
-                        {
-                            if (!firstTerm)
-                            {
-                                productions.Add(Run(Text("  ", true)));
-                            }
-                            firstTerm = false;
-
-                            productions.Add(Term(term));
-                        }
+                        runs.Add(Break());
                     }
+                    first = false;
 
-                    yield return Para("Grammar",
-                        ruleNameRun,
-                        colonRun,
-                        Break(),
-                        productions);
+                    var firstTerm = true;
+                    foreach (var term in production.Elements())
+                    {
+                        if (!firstTerm)
+                        {
+                            runs.Add(Run(Text("  ", true)));
+                        }
+                        firstTerm = false;
+
+                        runs.Add(Term(term));
+                    }
                 }
+
+                yield return Para("Grammar", runs);
             }
         }
 
