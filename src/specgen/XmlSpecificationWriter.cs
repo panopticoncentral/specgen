@@ -404,37 +404,17 @@ namespace specgen
                     break;
 
                 case "t":
-                    yield return Run(Text("\""));
+                    yield return Run(Text("'"));
                     yield return Run("GrammarTerminal",
                         Text(term.Value, true));
-                    yield return Run(Text("\""));
+                    yield return Run(Text("'"));
                     break;
 
                 case "meta":
-                    yield return Run(Text("< ", true));
-
-                    var firstNode = true;
-
-                    foreach (var node in term.Nodes())
-                    {
-                        if (!firstNode)
-                        {
-                            yield return Run(Text(" ", true));
-                        }
-                        firstNode = false;
-
-                        var element = node as XElement;
-                        if (element != null)
-                        {
-                            yield return Term(element);
-                        }
-                        else
-                        {
-                            yield return Run(Text((node as XText)?.ToString().Trim(), true));
-                        }
-                    }
-
-                    yield return Run(Text(" >", true));
+                    yield return Run(Text("'", true));
+                    yield return Run("GrammarTerminal", 
+                        Text($"<{term.Value}>", true));
+                    yield return Run(Text("'", true));
                     break;
 
                 case "star":
@@ -480,7 +460,6 @@ namespace specgen
                 var runs = new List<object>
                 {
                     Run("GrammarNon-Terminal", Text(rule.Attribute("name").Value, true)),
-                    Run(Text(":", true))
                 };
 
                 var first = true;
@@ -489,24 +468,26 @@ namespace specgen
 
                 foreach (var production in rule.Elements("production"))
                 {
-                    if (!first)
+                    if (first)
+                    {
+                        runs.Add(Run(Text(":", true)));
+                    }
+                    else
                     {
                         runs.Add(Break());
+                        runs.Add(Run(Text("|", true)));
                     }
                     first = false;
 
-                    var firstTerm = true;
                     foreach (var term in production.Elements())
                     {
-                        if (!firstTerm)
-                        {
-                            runs.Add(Run(Text("  ", true)));
-                        }
-                        firstTerm = false;
-
+                        runs.Add(Run(Text("  ", true)));
                         runs.Add(Term(term));
                     }
                 }
+
+                runs.Add(Break());
+                runs.Add(Run(Text(";", true)));
 
                 yield return Para("Grammar", runs);
             }

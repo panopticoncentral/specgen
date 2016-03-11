@@ -195,7 +195,7 @@
           <production>
             <nt>foo</nt>
             <t>bar</t>
-            <meta>baz with <t>bar</t></meta>
+            <meta>baz with bar</meta>
             <plus>
               <nt>foo</nt>
             </plus>
