@@ -46,7 +46,59 @@ namespace specgen
             writer.WriteLine();
         }
 
-        private static void NodeElement(XElement element, bool preserveLines, TextWriter writer, int level)
+        private static void Term(XElement term, TextWriter writer)
+        {
+            switch (term.Name.LocalName)
+            {
+                case "nt":
+                    writer.Write(term.Value);
+                    break;
+
+                case "t":
+                    writer.Write($"'{term.Value}'");
+                    break;
+
+                case "meta":
+                    writer.Write($"'<{term.Value}>'");
+                    break;
+
+                case "star":
+                    Term(term.Elements().First(), writer);
+                    writer.Write("*");
+                    break;
+
+                case "plus":
+                    Term(term.Elements().First(), writer);
+                    writer.Write("+");
+                    break;
+
+                case "opt":
+                    Term(term.Elements().First(), writer);
+                    writer.Write("?");
+                    break;
+
+                case "group":
+                    writer.Write("(");
+
+                    var firstSubTerm = true;
+
+                    foreach (var subTerm in term.Elements())
+                    {
+                        if (!firstSubTerm)
+                        {
+                            writer.Write(" ");
+                        }
+                        firstSubTerm = false;
+
+                        Term(subTerm, writer);
+                    }
+
+                    writer.Write(")");
+                    break;
+            }
+        }
+
+        private static void NodeElement(XElement element, bool preserveLines, bool first, TextWriter writer, int level)
         {
             switch (element.Name.LocalName)
             {
@@ -105,6 +157,43 @@ namespace specgen
                     writer.Write("~~");
                     NodeText(((XText)element.Nodes().First()).Value, preserveLines, true, writer, level);
                     writer.Write("~~");
+                    break;
+
+                case "token":
+                case "syntax":
+                    if (!first)
+                    {
+                        writer.WriteLine();
+                    }
+                    writer.WriteLine(element.Attribute("name").Value);
+                    writer.Write(new string(Enumerable.Repeat(' ', (level + 1) * 2).ToArray()));
+
+                    var firstProduction = true;
+
+                    foreach (var production in element.Elements("production"))
+                    {
+                        if (firstProduction)
+                        {
+                            writer.Write(":");
+                        }
+                        else
+                        {
+                            writer.WriteLine();
+                            writer.Write(new string(Enumerable.Repeat(' ', (level + 1) * 2).ToArray()));
+                            writer.Write("|");
+                        }
+                        firstProduction = false;
+
+                        foreach (var term in production.Elements())
+                        {
+                            writer.Write(" ");
+                            Term(term, writer);
+                        }
+                    }
+
+                    writer.WriteLine();
+                    writer.Write(new string(Enumerable.Repeat(' ', (level + 1) * 2).ToArray()));
+                    writer.WriteLine(";");
                     break;
             }
         }
@@ -232,6 +321,11 @@ namespace specgen
                         Block(item, writer, level + 1);
                     }
                     return;
+
+                case "grammar":
+                    writer.WriteLine("```antlr");
+                    writer.Write(new string(Enumerable.Repeat(' ', level * 2).ToArray()));
+                    break;
             }
 
             var first = true;
@@ -240,7 +334,7 @@ namespace specgen
                 var element = node as XElement;
                 if (element != null)
                 {
-                    NodeElement(element, preserveLines, writer, level);
+                    NodeElement(element, preserveLines, first, writer, level);
                 }
                 else
                 {
@@ -251,6 +345,7 @@ namespace specgen
 
             switch (block.Name.LocalName)
             {
+                case "grammar":
                 case "code":
                     writer.Write("```");
                     break;
