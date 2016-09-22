@@ -59,7 +59,7 @@ namespace specgen
                     break;
 
                 case "meta":
-                    writer.Write($"'<{term.Value}>'");
+                    writer.Write($"<{term.Value}>");
                     break;
 
                 case "star":
@@ -94,6 +94,12 @@ namespace specgen
                     }
 
                     writer.Write(")");
+                    break;
+
+                case "range":
+                    Term(term.Elements().First(), writer);
+                    writer.Write("..");
+                    Term(term.Elements().Skip(1).First(), writer);
                     break;
             }
         }

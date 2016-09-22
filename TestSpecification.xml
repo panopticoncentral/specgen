@@ -205,6 +205,10 @@
             <star>
               <nt>foo</nt>
             </star>
+            <range>
+              <t>a</t>
+              <t>z</t>
+            </range>
           </production>
           <production>
             <star>

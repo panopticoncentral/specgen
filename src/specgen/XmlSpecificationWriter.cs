@@ -411,10 +411,8 @@ namespace specgen
                     break;
 
                 case "meta":
-                    yield return Run(Text("'", true));
                     yield return Run("GrammarTerminal", 
                         Text($"<{term.Value}>", true));
-                    yield return Run(Text("'", true));
                     break;
 
                 case "star":
@@ -449,6 +447,12 @@ namespace specgen
                     }
 
                     yield return Run(Text(")"));
+                    break;
+
+                case "range":
+                    yield return Term(term.Elements().First());
+                    yield return Run(Text(".."));
+                    yield return Term(term.Elements().Skip(1).First());
                     break;
             }
         }

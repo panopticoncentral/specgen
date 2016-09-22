@@ -160,6 +160,14 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="range" substitutionGroup="term">
+    <xs:complexType>
+      <xs:sequence minOccurs="1" maxOccurs="1">
+        <xs:element ref="term"/>
+        <xs:element ref="term"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
 
   <xs:element name="issue" substitutionGroup="block">
     <xs:complexType mixed="true">
