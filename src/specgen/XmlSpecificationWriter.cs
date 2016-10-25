@@ -566,10 +566,6 @@ namespace specgen
                     style = "NumberedList" + level;
                     break;
 
-                case "tableSpacing":
-                    style = "TableSpacing";
-                    break;
-
                 case "text":
                     style = GetMultiLevelName("Text", level);
                     break;
@@ -1535,18 +1531,6 @@ namespace specgen
                     Style(false, true, false, "Superscript", "Superscript", true, "DefaultParagraphFont", null, false, false, null,
                         RunProperties(
                             KeyValue("vertAlign", "superscript")
-                        )
-                    ),
-                    Style(true, true, false, "TableSpacing", "Table Spacing", false, "Text", "Text", true, false, null,
-                        ParaProperties(
-                            new XElement(ws + "spacing",
-                                new XAttribute(ws + "after", "0"),
-                                new XAttribute(ws + "line", "120"),
-                                new XAttribute(ws + "lineRule", "exact"))
-                        ),
-                        RunProperties(
-                            KeyValue("color", "FF00FF"),
-                            KeyValue("sz", "12")
                         )
                     ),
                     Style(true, true, false, "Text", "Text", true, null, null, false, false, "TextChar",

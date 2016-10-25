@@ -204,10 +204,6 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="tableSpacing" substitutionGroup="block">
-    <xs:complexType/>
-  </xs:element>
-
   <xs:element name="text" substitutionGroup="block">
     <xs:complexType mixed="true">
       <xs:group ref="inline"/>
