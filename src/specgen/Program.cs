@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 
-namespace specgen
+namespace Specgen
 {
     internal class Program
     {
@@ -39,7 +39,7 @@ namespace specgen
             {
                 if (!tokenSymbols.ContainsKey(tokenReference))
                 {
-                    missingTokenReferences.Add(tokenReference);
+                    _ = missingTokenReferences.Add(tokenReference);
                 }
                 else
                 {
@@ -91,7 +91,7 @@ namespace specgen
                 {
                     if (!tokenSymbols.ContainsKey(syntaxReference))
                     {
-                        missingSyntaxReferences.Add(syntaxReference);
+                        _ = missingSyntaxReferences.Add(syntaxReference);
                     }
                     else
                     {

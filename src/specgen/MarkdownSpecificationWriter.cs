@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace specgen
+namespace Specgen
 {
     internal class MarkdownSpecificationWriter
     {
@@ -313,7 +313,7 @@ namespace specgen
 
                 case "bulletedList":
                 case "numberedList":
-                    bool firstItem = true;
+                    var firstItem = true;
                     foreach (var item in block.Elements())
                     {
                         if (firstItem)
@@ -337,8 +337,7 @@ namespace specgen
             var first = true;
             foreach (var node in block.Nodes())
             {
-                var element = node as XElement;
-                if (element != null)
+                if (node is XElement element)
                 {
                     NodeElement(element, preserveLines, first, writer, level);
                 }
@@ -364,7 +363,7 @@ namespace specgen
         {
             writer.WriteLine($"{new string('#', level)} <a name=\"{parentLevel}{index}\"></a>{parentLevel}{index} {section.Attribute("title").Value}");
 
-            int subIndex = 1;
+            var subIndex = 1;
             foreach (var element in section.Elements())
             {
                 writer.WriteLine();
@@ -389,7 +388,7 @@ namespace specgen
 
         private static void Sections(XDocument spec, TextWriter writer)
         {
-            int index = 1;
+            var index = 1;
             foreach (var section in spec.Elements("specification").Elements("body").Single().Elements())
             {
                 Section(section, writer, 1, index, "");
@@ -399,15 +398,11 @@ namespace specgen
 
         public static void WriteSpecification(XDocument spec, string path)
         {
-            using (var stream = new FileStream(path, FileMode.Create))
-            {
-                using (var writer = new StreamWriter(stream))
-                {
-                    TitleSection(spec, writer);
-                    TableOfContents(spec, writer);
-                    Sections(spec, writer);
-                }
-            }
+            using var stream = new FileStream(path, FileMode.Create);
+            using var writer = new StreamWriter(stream);
+            TitleSection(spec, writer);
+            TableOfContents(spec, writer);
+            Sections(spec, writer);
         }
     }
 }

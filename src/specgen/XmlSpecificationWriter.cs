@@ -4,22 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 
-namespace specgen
+namespace Specgen
 {
     internal class XmlSpecificationWriter
     {
         private static readonly XNamespace Pkg = "http://schemas.microsoft.com/office/2006/xmlPackage";
-        // ReSharper disable once InconsistentNaming
         private static readonly XNamespace rs = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
-        // ReSharper disable once InconsistentNaming
         private static readonly XNamespace prs = "http://schemas.openxmlformats.org/package/2006/relationships";
-        // ReSharper disable once InconsistentNaming
         private static readonly XNamespace ws = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
-        // ReSharper disable once InconsistentNaming
         private static readonly XNamespace m = "http://schemas.openxmlformats.org/officeDocument/2006/math";
-        // ReSharper disable once InconsistentNaming
         private static readonly XNamespace o = "urn:schemas-microsoft-com:office:office";
-        // ReSharper disable once InconsistentNaming
         private static readonly XNamespace v = "urn:schemas-microsoft-com:vml";
 
         private static readonly List<XElement> Numbers = new List<XElement>();
@@ -85,10 +79,7 @@ namespace specgen
                 new XAttribute(ns + "val", value));
         }
 
-        private static XElement KeyValue(string key, string value)
-        {
-            return KeyValue(ws, key, value);
-        }
+        private static XElement KeyValue(string key, string value) => KeyValue(ws, key, value);
 
         private static XElement KeyValue(string key, string valueName, string value)
         {
@@ -377,14 +368,14 @@ namespace specgen
 
                     if (c == '\r' || c == '\n')
                     {
-                        finalText.Append(' ');
+                        _ = finalText.Append(' ');
                         whitespacePrevious = true;
                     }
                     else
                     {
                         seenCharacter = true;
-                        whitespacePrevious = (c == ' ');
-                        finalText.Append(c);
+                        whitespacePrevious = c == ' ';
+                        _ = finalText.Append(c);
                     }
                 }
 
@@ -576,8 +567,7 @@ namespace specgen
 
             foreach (var node in block.Nodes())
             {
-                var element = node as XElement;
-                runs.Add(element != null ?
+                runs.Add(node is XElement element ?
                     NodeElement(element, preserveLines) :
                     NodeText(((XText)node).Value, null, preserveLines, first));
                 first = false;
@@ -600,14 +590,7 @@ namespace specgen
 
             foreach (var element in section.Elements())
             {
-                if (element.Name.LocalName == "section")
-                {
-                    yield return Section(element, level + 1, false);
-                }
-                else
-                {
-                    yield return Block(element);
-                }
+                yield return element.Name.LocalName == "section" ? Section(element, level + 1, false) : Block(element);
             }
 
             if (level == 1)
@@ -711,15 +694,9 @@ namespace specgen
                 text);
         }
 
-        private static XElement Break()
-        {
-            return new XElement(ws + "br");
-        }
+        private static XElement Break() => new XElement(ws + "br");
 
-        private static XElement Tab()
-        {
-            return new XElement(ws + "tab");
-        }
+        private static XElement Tab() => new XElement(ws + "tab");
 
         private static XElement SectionProperties(params object[] elements)
         {
